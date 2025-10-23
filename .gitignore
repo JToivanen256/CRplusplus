@@ -97,5 +97,9 @@ Mkfile.old
 dkms.conf
 
 # Build directory
+<<<<<<< Updated upstream
+build/
+>>>>>>> Stashed changes
+=======
 build/
 >>>>>>> Stashed changes
