@@ -1,7 +1,6 @@
-# Project Name TBD
+# CR++ (Clash Royale++)
 
-This is the template for the projects. Please copy the project description here.
-You can use Markdown language to render it as formatted **HTML** file.
+Clash Royale type 1v1 2D strategy game.
 
 # Group
 
