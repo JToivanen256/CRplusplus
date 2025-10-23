@@ -1,8 +1,10 @@
 cmake_minimum_required(VERSION 3.10)
-project(strategy-game-1 LANGUAGES CXX)
+project(strategy-game-1)
 
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
+# Find SFML package (you can adjust the version as needed)
+find_package(SFML 2.5 REQUIRED graphics window system)
 
 add_executable(strategy-game-1 src/main.cpp)
 
+# Link the necessary SFML libraries
+target_link_libraries(strategy-game-1 sfml-graphics sfml-window sfml-system)
