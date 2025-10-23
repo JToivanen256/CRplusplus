@@ -25,6 +25,7 @@ Everyone
 
 ## Actions
 
+   Lasse will try to figure out how to get SFML working in the project without having to manually install it.
 
 
 > Please reflect these action decisions in your git commit messages so that
@@ -32,8 +33,10 @@ Everyone
 
 ## Project status
 
-   
+   SFML works on WSL but not on Mac due to version differences
+
 
 ### TODOs
 
-   Creating classes
+   Creating class declarations
+   
