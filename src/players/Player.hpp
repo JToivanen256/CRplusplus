@@ -12,13 +12,13 @@ class Player {
 public:
   Player(const std::string& name, Deck deck);
 protected:
-  int elixir;
-  std::string name;
-  Deck deck;
-  Hand hand;
-  Tower kingTower;
-  Tower firstTower;
-  Tower secondTower;
+  int elixir_;
+  std::string name_;
+  Deck deck_;
+  Hand hand_;
+  Tower kingTower_;
+  Tower firstTower_;
+  Tower secondTower_;
 public:
 
   // Actions

@@ -5,12 +5,12 @@
 
 class AI {
 public:
-  AI(Player& p) : player(p) {}
+  AI(Player& p) : player_(p) {}
 
   void play() const; // AI Strategy
 
 private:
-  Player& player;
+  Player& player_;
 };
 
 #endif

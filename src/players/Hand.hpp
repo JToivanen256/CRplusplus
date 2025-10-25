@@ -12,7 +12,7 @@ public:
   const std::vector<Card>& getCards() const;
 
 private:
-  std::vector<Card> cards;
+  std::vector<Card> cards_;
 };
 
 #endif

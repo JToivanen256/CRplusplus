@@ -10,8 +10,8 @@ public:
   int getCost() const;
 
 private:
-  std::string name;
-  int cost;
+  std::string name_;
+  int cost_;
 };
 
 #endif
