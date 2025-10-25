@@ -15,7 +15,6 @@ protected:
 public:
   Building(int x, int y) : Entity(x, y) {}
 
-  virtual void move() = 0;
   virtual void attack() = 0;
 
   void takeDamage(int amount);
