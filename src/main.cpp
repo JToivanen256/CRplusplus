@@ -1,18 +1,16 @@
 #include <SFML/Graphics.hpp>
 
-int main() {
-    sf::RenderWindow window(sf::VideoMode(800, 600), "SFML App");
-    
-    sf::RectangleShape shape;
+int main()
+{
+    sf::RenderWindow window(sf::VideoMode({200, 200}), "SFML works!");
+    sf::CircleShape shape(100.f);
+    shape.setFillColor(sf::Color::Green);
 
-    shape.setSize(sf::Vector2f(50,50));
-    shape.setPosition(250,250);
-
-
-    while (window.isOpen()) {
-        sf::Event event;
-        while (window.pollEvent(event)) {
-            if (event.type == sf::Event::Closed)
+    while (window.isOpen())
+    {
+        while (const std::optional event = window.pollEvent())
+        {
+            if (event->is<sf::Event::Closed>())
                 window.close();
         }
 
@@ -20,6 +18,4 @@ int main() {
         window.draw(shape);
         window.display();
     }
-    
-    return 0;
 }
