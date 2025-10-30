@@ -57,11 +57,19 @@ Osku, Lasse, Aleksi
 ### TODOs
 
    Cards
+
    Decks
+
    Menu?
+
    Towers
+
    (Simple) Combat
+
    (Simple) Movement
+
    (Simple) Units
+
    Some sprites
+   
    Grid map
