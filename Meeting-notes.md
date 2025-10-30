@@ -40,3 +40,28 @@ Everyone
 
    Creating class declarations
    
+
+
+
+# Meeting 30.10.2025 
+
+**Participants**:
+
+Osku, Lasse, Aleksi
+
+## Project status
+
+   Simple Class Headers exist and SFML works for everyone
+
+
+### TODOs
+
+   Cards
+   Decks
+   Menu?
+   Towers
+   (Simple) Combat
+   (Simple) Movement
+   (Simple) Units
+   Some sprites
+   Grid map
