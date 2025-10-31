@@ -43,7 +43,10 @@ public:
     return currentCooldown_ <= 0.0f;
   };
 
-  virtual void attack(Entity& target) = 0;
+  virtual void attack(Entity& target) { 
+      target.takeDamage(damage_);
+      currentCooldown_ = attackCooldown_;
+  }
 
   virtual void update(float deltaTime) = 0;
 
