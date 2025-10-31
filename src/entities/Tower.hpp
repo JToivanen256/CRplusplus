@@ -8,7 +8,7 @@ protected:
   bool isKingTower_;
 
 public:
-  Tower(int x, int y, bool isKingTower);
+  Tower(int x, int y, int gridX, int gridY, int health, int damage, float attackCooldown, float attackRange, int size, bool isKingTower);
 
 };
 

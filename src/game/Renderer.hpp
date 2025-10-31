@@ -1,9 +1,13 @@
 #ifndef RENDERER_HPP
 #define RENDERER_HPP
 
+#include <SFML/Graphics.hpp>
+#include "Map.hpp"
 
-// SFML TÄNNE
 class Renderer {
+private:
+  Map& map_;
+
 public:
   void renderAll();
 };
