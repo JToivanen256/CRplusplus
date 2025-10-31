@@ -2,7 +2,7 @@
 #include <iostream>
 
 MenuState::MenuState() {
-  if (!font_.loadFromFile("../assets/fonts/MomoTrustDisplay-Regular.ttf")) {
+  if (!font_.loadFromFile("assets/fonts/MomoTrustDisplay-Regular.ttf")) {
     std::cerr << "Failed to load font!" << std::endl;
   }
 
