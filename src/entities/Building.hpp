@@ -9,11 +9,10 @@ protected:
   int damage_;
   float attackCooldown_;
   float attackRange_;
-  int width_;
-  int height_;
+  int size_;
 
 public:
-  Building(int x, int y) : Entity(x, y) {}
+  Building(int x, int y, int gridX, int gridY, int health, int damage, float attackCooldown, float attackRange, int size);
 
   virtual void attack() = 0;
 
