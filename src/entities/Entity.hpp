@@ -20,6 +20,7 @@ protected:
   Pos position_;
   int health_;
   int damage_;
+  float currentCooldown_ = 0.0f;
   float attackCooldown_;
   float attackRange_;
   bool isAlive_ = true;
@@ -37,8 +38,12 @@ public:
   GridPos getGridPosition() const;
   Pos getPosition() const;
 
-  // Can attack only if not on cooldown, Combat class should handle combat and only ask if units aren't on cooldown
-  virtual bool canAttack() const = 0;
+  // Can attack only if not on cooldown, Combat class should handle combat and ask if units aren't on cooldown
+  bool canAttack() const {
+    return currentCooldown_ <= 0.0f;
+  };
+
+  virtual void attack(Entity& target) = 0;
 
   virtual void update(float deltaTime) = 0;
 
