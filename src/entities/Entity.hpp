@@ -37,9 +37,10 @@ public:
   GridPos getGridPosition() const;
   Pos getPosition() const;
 
-  virtual void attack() = 0;
+  // Can attack only if not on cooldown, Combat class should handle combat and only ask if units aren't on cooldown
+  virtual bool canAttack() const = 0;
 
-  virtual void update() = 0;
+  virtual void update(float deltaTime) = 0;
 
   void takeDamage(int amount) {
     health_ -= amount;
