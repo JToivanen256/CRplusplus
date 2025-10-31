@@ -1,12 +1,10 @@
+#include "ui/MenuState.hpp"
 #include <SFML/Graphics.hpp>
 
 int main() {
     sf::RenderWindow window(sf::VideoMode(800, 600), "SFML App");
-    
-    sf::RectangleShape shape;
 
-    shape.setSize(sf::Vector2f(50,50));
-    shape.setPosition(250,250);
+    MenuState menuState;
 
 
     while (window.isOpen()) {
@@ -15,9 +13,10 @@ int main() {
             if (event.type == sf::Event::Closed)
                 window.close();
         }
+        menuState.handleInput(window);
 
         window.clear();
-        window.draw(shape);
+        menuState.render(window);
         window.display();
     }
     
