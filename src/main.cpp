@@ -4,16 +4,16 @@
 int main() {
     sf::RenderWindow window(sf::VideoMode(800, 600), "SFML App");
 
-    MenuState menuState;
+    MenuState menuState(window);
 
 
     while (window.isOpen()) {
         sf::Event event;
         while (window.pollEvent(event)) {
+            menuState.handleInput(window, event);
             if (event.type == sf::Event::Closed)
                 window.close();
         }
-        menuState.handleInput(window);
 
         window.clear();
         menuState.render(window);

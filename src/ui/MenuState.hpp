@@ -13,9 +13,9 @@ private:
   int selectedOptionIndex_ = -1;
 
 public:
-  MenuState();
+  MenuState(sf::RenderWindow& window);
   virtual void update(float deltaTime) override;
-  virtual void handleInput(sf::RenderWindow& window) override;
+  virtual void handleInput(sf::RenderWindow& window, sf::Event event) override;
   virtual void render(sf::RenderWindow& window) override;
 };
 
