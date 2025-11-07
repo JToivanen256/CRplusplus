@@ -8,14 +8,12 @@
 #include <string>
 
 int main() {
-    sf::RenderWindow window(sf::VideoMode(800, 600), "SFML App");
-
-    std::unique_ptr<GameState> currentState = std::make_unique<MenuState>(window);
+    sf::RenderWindow window(sf::VideoMode(390, 780), "SFML App");
 
     Player player1 = Player("Test", Deck());
     Player player2 = Player("Test2", Deck());
 
-
+    std::unique_ptr<GameState> currentState = std::make_unique<MenuState>(window);
 
     while (window.isOpen()) {
         sf::Event event;
