@@ -2,9 +2,9 @@
 
 Grid::Grid(int xSize, int ySize): columns(xSize), rows(ySize), tiles(xSize * ySize)
 {
-    for(int row = 0; row < xSize; row++)
+    for(int row = 0; row < rows; row++)
     {
-        for(int column = 0; column < ySize; column++)
+        for(int column = 0; column < columns; column++)
         {
             //gets the current tile. Meaning that row * columns is just which row we are at
             //and + column gets the current column if that makes sense :D 

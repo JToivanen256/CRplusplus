@@ -11,6 +11,8 @@ public:
   
   const Tile& getTile(int x, int y) const;
 
+  Grid& getGrid();
+
   void generateDefaultMap();
 
   // Maybe first random paths to connect king towers, then wave collapse function to fill the rest?

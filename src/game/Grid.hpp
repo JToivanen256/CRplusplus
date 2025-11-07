@@ -5,7 +5,7 @@
 class Grid
 {
 private:
-    int tileSize = 25;
+    int tileSize = 13;
     int columns, rows;
     std::vector<sf::RectangleShape> tiles;
 
