@@ -3,7 +3,7 @@
 
 class Tile {
 public:
-  enum class Type { Grass, Water, Frozen, Poisoned };
+  enum class Type { Grass, Water, Bridge };
 
   Tile(Type type) : type_(type) {}
 

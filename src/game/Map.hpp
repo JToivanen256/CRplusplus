@@ -2,6 +2,7 @@
 #define MAP_HPP
 
 #include "Tile.hpp"
+#include "Grid.hpp"
 #include <vector>
 
 class Map {
@@ -18,7 +19,7 @@ public:
 private:
   int width_;
   int height_;
-  std::vector<std::vector<Tile>> tiles_;
+  Grid grid_;
 };
 
 #endif
