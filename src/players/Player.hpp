@@ -5,7 +5,6 @@
 
 #include "Deck.hpp"
 #include "Hand.hpp"
-#include "../entities/Tower.hpp"
 
 
 class Player { 
@@ -16,16 +15,17 @@ protected:
   std::string name_;
   Deck deck_;
   Hand hand_ = Hand();
-//  Tower& kingTower_;
-//  Tower& firstTower_;
-//  Tower& secondTower_;
+  float elixirRegenRate_ = 0.3f;
+  float elixirTimer_ = 0.0f;
+
 public:
+
+  // Regen elixir over time
+  void update(float deltaTime);
 
   // Actions
   void drawCard();
   void playCard(const Card& card);
-  void gainElixir(int amount);
-  void spendElixir(int amount);
 
   // Deck and Hand 
   void shuffleDeck();
