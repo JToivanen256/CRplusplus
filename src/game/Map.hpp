@@ -17,8 +17,6 @@ public:
   void generateRandomMap();
   
 private:
-  int width_;
-  int height_;
   Grid grid_;
 };
 

@@ -15,10 +15,10 @@ protected:
   int elixir_;
   std::string name_;
   Deck deck_;
-  Hand hand_;
-  Tower kingTower_;
-  Tower firstTower_;
-  Tower secondTower_;
+  Hand hand_ = Hand();
+//  Tower& kingTower_;
+//  Tower& firstTower_;
+//  Tower& secondTower_;
 public:
 
   // Actions

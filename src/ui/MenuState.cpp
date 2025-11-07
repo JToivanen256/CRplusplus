@@ -42,6 +42,7 @@ void MenuState::handleInput(sf::RenderWindow& window, sf::Event event) {
   // Clicking items in the menu
   if (event.type == sf::Event::MouseButtonReleased && event.mouseButton.button == sf::Mouse::Left && selectedOptionIndex_ != -1) {
     if (selectedOptionIndex_ == 0) {
+      ongoingMatch_ = true;
       std::cout << "PLAY" << std::endl;
     } else if (selectedOptionIndex_ == 1) {
       window.close();

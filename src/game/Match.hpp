@@ -12,8 +12,11 @@ private:
   Map map_;
 
 public:
-  Match(Player player1, Player player2, Map map);
+  Match(Player player1, Player player2);
 
+  void update(float deltaTime);
+  void render(sf::RenderWindow& window);
+  void handleInput(sf::Event event);
 };
 
 #endif
