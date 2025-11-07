@@ -26,12 +26,13 @@ protected:
   bool isAlive_ = true;
   sf::Sprite sprite_;
   sf::Texture texture_;
+  Player* owner_;
 
 
 public:
-  Entity(int x, int y, int gridX, int gridY, int health, int damage, float attackCooldown, float attackRange)
+  Entity(int x, int y, int gridX, int gridY, int health, int damage, float attackCooldown, float attackRange, Player* owner)
     : position_{x, y}, gridPosition_{gridX, gridY}, health_(health), damage_(damage),
-      attackCooldown_(attackCooldown), attackRange_(attackRange) {}
+      attackCooldown_(attackCooldown), attackRange_(attackRange), owner_(owner) {}
 
   virtual ~Entity() = default;
 

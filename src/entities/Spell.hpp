@@ -3,6 +3,7 @@
 
 #include "Entity.hpp"
 #include <SFML/Graphics.hpp>
+#include "../players/Player.hpp"
 
 struct Pos {
   int x;
@@ -15,9 +16,10 @@ protected:
   Pos centerPosition_;
   int damage_;
   float duration_;
+  Player* owner_;
 
 public:
-  Spell(int x, int y, float radius, int damage, float duration);
+  Spell(int x, int y, float radius, int damage, float duration, Player* owner);
 
   void cast();
 

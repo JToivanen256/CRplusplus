@@ -2,7 +2,7 @@
 #define UNIT_HPP
 
 #include "Entity.hpp"
-
+#include "../players/Player.hpp"
 
 class Unit : public Entity {
 protected:
@@ -10,7 +10,7 @@ protected:
   float visionRange_;
   
 public:
-  Unit(int x, int y, int gridX, int gridY, int health, int damage, float attackCooldown, float attackRange, float movementSpeed, float visionRange);
+  Unit(int x, int y, int gridX, int gridY, int health, int damage, float attackCooldown, float attackRange, float movementSpeed, float visionRange, Player* owner);
 
   virtual void move() = 0;
 

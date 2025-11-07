@@ -8,8 +8,8 @@ protected:
   int size_;
 
 public:
-  Building(int x, int y, int gridX, int gridY, int health, int damage, float attackCooldown, float attackRange, int size)
-    : Entity(x, y, gridX, gridY, health, damage, attackCooldown, attackRange), size_(size) {}
+  Building(int x, int y, int gridX, int gridY, int health, int damage, float attackCooldown, float attackRange, int size, Player* owner)
+    : Entity(x, y, gridX, gridY, health, damage, attackCooldown, attackRange, owner), size_(size) {}
 
 };
 #endif

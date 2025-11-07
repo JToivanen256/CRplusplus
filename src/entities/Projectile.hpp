@@ -3,6 +3,7 @@
 
 #include "Entity.hpp"
 #include <SFML/Graphics.hpp>
+#include "../players/Player.hpp"
 
 struct Pos {
   int x;
@@ -17,10 +18,11 @@ protected:
   Pos targetPosition_;
   sf::Sprite sprite_;
   sf::Texture texture_;
+  Player* owner_;
 
 
 public:
-  Projectile(int x, int y, float speed, int damage, Pos targetPosition);
+  Projectile(int x, int y, float speed, int damage, Pos targetPosition, Player* owner);
 
   void move();
 
