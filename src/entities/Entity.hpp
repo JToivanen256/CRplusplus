@@ -2,6 +2,7 @@
 # define ENTITY_HPP
 
 #include <SFML/Graphics.hpp>
+#include "../players/Player.hpp"
 
 struct GridPos {
   int x;

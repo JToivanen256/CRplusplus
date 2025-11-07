@@ -5,11 +5,6 @@
 #include <SFML/Graphics.hpp>
 #include "../players/Player.hpp"
 
-struct Pos {
-  int x;
-  int y;
-};
-
 class Spell {
 protected:
   float radius_;

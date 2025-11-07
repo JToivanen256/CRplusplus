@@ -2,6 +2,7 @@
 #define TOWER_HPP
 
 #include "Building.hpp"
+#include "../players/Player.hpp"
 
 class Tower : public Building {
 protected:

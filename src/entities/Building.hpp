@@ -2,6 +2,7 @@
 #define BUILDING_HPP
 
 #include "Entity.hpp"
+#include "../players/Player.hpp"
 
 class Building : public Entity {
 protected:
