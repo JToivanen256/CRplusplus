@@ -2,16 +2,9 @@
 
 #include <iostream>
 
-std::unique_ptr<CardRenderer> CardRenderer::instance_;
-
-CardRenderer& CardRenderer::getInstance() {
-  if (!instance_) {
-    instance_ = std::unique_ptr<CardRenderer>(new CardRenderer());
-  }
-  return *instance_;
-}
-
 CardRenderer::CardRenderer() {}
+
+CardRenderer::~CardRenderer() { textures_.clear(); }
 
 bool CardRenderer::loadTexture(const std::string& spritePath) {
   // Return true if texture is already loaded
@@ -33,7 +26,7 @@ bool CardRenderer::loadTexture(const std::string& spritePath) {
 
 void CardRenderer::renderCard(const Card& card, sf::RenderWindow& window,
                               const sf::Vector2f& position,
-                              const sf::Vector2f& scale) const {
+                              const sf::Vector2f& scale, const sf::Font& font) {
   // Draw fallback by default
   auto drawFallback = [&]() {
     sf::RectangleShape fallback(sf::Vector2f(scale.x * 64.f, scale.y * 64.f));
@@ -43,9 +36,8 @@ void CardRenderer::renderCard(const Card& card, sf::RenderWindow& window,
     fallback.setOutlineThickness(1.f);
     window.draw(fallback);
 
-    // Also draw card name for clarity
-    sf::Text name(card.getName(), sf::Font(),
-                  12);  // TODO: Pass font as parameter if needed
+    // Also draw card name for clarity using provided font
+    sf::Text name(card.getName(), font, 12);
     name.setPosition(position.x + 4.f, position.y + 4.f);
     name.setFillColor(sf::Color::White);
     window.draw(name);
@@ -53,7 +45,7 @@ void CardRenderer::renderCard(const Card& card, sf::RenderWindow& window,
 
   // Try to load and render the sprite
   const std::string& spritePath = card.getSpritePath();
-  if (!instance_->loadTexture(spritePath)) {
+  if (!this->loadTexture(spritePath)) {
     drawFallback();
     return;
   }

@@ -38,9 +38,7 @@ void MatchState::render(sf::RenderWindow& window) {
     const auto& card = cards[i];
     float x = startX + i * (cardW + gap);
 
-    CardRenderer::getInstance().renderCard(
-        card, window, {x, y}, {cardW / 256.f, cardH / 256.f}
-        // need to scale down a lot
-    );
+    cardRenderer_.renderCard(card, window, {x, y},
+                             {cardW / 256.f, cardH / 256.f}, font_);
   }
 }

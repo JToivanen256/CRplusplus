@@ -7,6 +7,7 @@
 
 #include "../game/Match.hpp"
 #include "../players/Player.hpp"
+#include "CardRenderer.hpp"
 #include "GameState.hpp"
 
 class MatchState : public GameState {
@@ -15,6 +16,7 @@ class MatchState : public GameState {
   Player& player1_;
   Player& player2_;
   sf::Font font_;
+  CardRenderer cardRenderer_;
 
  public:
   MatchState(Player& p1, Player& p2);
