@@ -2,10 +2,10 @@
 
 #include "Card.hpp"
 
-class unit : public Card {
+class UnitCard : public Card {
  public:
-  unit(const std::string& name, int cost, int health, int damage, int range,
-       bool isBuildingTargeter, float attackCooldown, float movementSpeed);
+  UnitCard(const std::string& name, int cost, int health, int damage, int range,
+           bool isBuildingTargeter, float attackCooldown, float movementSpeed);
   const int getHealth() const;
   const int getDamage() const;
   const int getRange() const;

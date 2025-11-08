@@ -14,3 +14,5 @@ void Player::update(float deltaTime) {
 }
 
 int Player::getElixir() const { return elixir_; }
+
+const Hand& Player::getHand() const { return hand_; }
