@@ -6,20 +6,19 @@
 #include "Deck.hpp"
 #include "Hand.hpp"
 
-
-class Player { 
-public:
+class Player {
+ public:
   Player(const std::string& name, Deck deck);
-protected:
+
+ protected:
   int elixir_;
   std::string name_;
   Deck deck_;
-  Hand hand_ = Hand();
+  Hand hand_;
   float elixirRegenRate_ = 0.3f;
   float elixirTimer_ = 0.0f;
 
-public:
-
+ public:
   // Regen elixir over time
   void update(float deltaTime);
 
@@ -27,7 +26,7 @@ public:
   void drawCard();
   void playCard(const Card& card);
 
-  // Deck and Hand 
+  // Deck and Hand
   void shuffleDeck();
   void initializeHand();
 
@@ -35,7 +34,6 @@ public:
   const std::string& getName() const;
   int getElixir() const;
   const Hand& getHand() const;
-
 };
 
 #endif
