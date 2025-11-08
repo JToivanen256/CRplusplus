@@ -2,16 +2,18 @@
 #define DECK_HPP
 
 #include <vector>
+
 #include "Card.hpp"
 
 class Deck {
-public:
-  Deck();
+ public:
+  Deck(const std::vector<Card>& cards);
   void addCard(const Card& card);
   void removeCard(const Card& card);
   const std::vector<Card>& getCards() const;
+  std::vector<Card> initializeHand() const;
 
-private:
+ private:
   std::vector<Card> cards_;
 };
 
