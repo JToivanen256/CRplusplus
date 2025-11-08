@@ -10,12 +10,15 @@ protected:
   float visionRange_;
   
 public:
-  Unit(int x, int y, int gridX, int gridY, int health, int damage, float attackCooldown, float attackRange, float movementSpeed, float visionRange, Player* owner);
+  Unit(int x, int y, int gridX, int gridY, int health, int damage, float attackCooldown, float attackRange, float movementSpeed, float visionRange, Player* owner)
+    : Entity(x, y, gridX, gridY, health, damage, attackCooldown, attackRange, owner), movementSpeed_(movementSpeed), visionRange_(visionRange){}
 
   virtual void move() = 0;
 
   //void heal(int amount); ?
-
+protected:
+  float movementSpeed_;
+  float visionRange_;
 };
 
 #endif
