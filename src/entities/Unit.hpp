@@ -2,28 +2,42 @@
 #define UNIT_HPP
 
 #include "Entity.hpp"
+#include "../players/Player.hpp"
+#include <SFML/Graphics.hpp>
+#include <functional>
+#include <vector>
+
+enum class Direction {None, Up, Down, Left, Right, UpLeft, UpRight, DownLeft, DownRight};
 
 
 class Unit : public Entity {
 protected:
-  int health_;
-  int damage_;
-  float attackCooldown_;
-  float attackRange_;
   float movementSpeed_;
   float visionRange_;
+  sf::Vector2f posF_{0.f, 0.f};
+
+  using CanMoveFn = std::function<bool(const sf::Vector2f& nextWorldPos)>;
+  using QueryFn   = std::function<void(const sf::Vector2f& center, float radius, std::vector<Entity*>& out)>;
+
+  CanMoveFn CanMoveTo_{};
+  QueryFn   queryEntities{};
   
+
+
 public:
-  Unit(int x, int y) : Entity(x, y) {}
+  Unit(int x, int y, int gridX, int gridY, int health, int damage, float attackCooldown, float attackRange, float movementSpeed, float visionRange, Player* owner)
+    : Entity(x, y, gridX, gridY, health, damage, attackCooldown, attackRange, owner), movementSpeed_(movementSpeed), visionRange_(visionRange){}
 
-  virtual void move() = 0;
-  virtual void attack() = 0;
+  void move(Direction dir, float dt);
+  void moveToward(const sf::Vector2f& dest, float dt);
 
-  void takeDamage(int amount);
+  Entity* scanNearestEnemy(const std::vector<Entity*>& all)const;
+
+  void drawVision(sf::RenderWindow& window, bool visible = true)const;
+
+  void syncVisual();
 
   //void heal(int amount); ?
-
-  void die();
 
 };
 
