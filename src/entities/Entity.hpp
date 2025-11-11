@@ -37,8 +37,12 @@ public:
 
   virtual ~Entity() = default;
 
-  GridPos getGridPosition() const;
-  Pos getPosition() const;
+  GridPos getGridPosition(){
+    return gridPosition_;
+  }
+  Pos getPosition(){
+    return position_;
+  }
 
   // Can attack only if not on cooldown, Combat class should handle combat and ask if units aren't on cooldown
   bool canAttack() const {

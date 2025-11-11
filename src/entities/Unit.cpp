@@ -80,7 +80,7 @@ Entity* Unit::scanNearestEnemy(const std::vector<Entity*>& all)const{
 
 
 //this draws a circle showing the vision range of an unit and can be used for debuggin purposes
-void Unit::drawVision(sf::RenderWindow& window, bool visible = true)const{
+void Unit::drawVision(sf::RenderWindow& window, bool visible)const{
     if(visible){
         return;
     }
