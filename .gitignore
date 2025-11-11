@@ -47,3 +47,9 @@ dkms.conf
 
 # Build directory
 build/
+
+#Mac 
+*.DS_Store
+.AppleDouble
+
+/sfml/Mac/

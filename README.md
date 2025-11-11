@@ -26,3 +26,14 @@ instructions provided in the git repository. The final output should be in the *
 
 It is recommended to use Doxygen to document your source code.
 Please go over the _Project Guidelines_ for details.
+
+# Now crossplatform compatible. NOTE!!!
+
+CMake is now using the Release dll binaries for debug and release.
+This is done because running the debug executable won't work on windows. (Works on linux completely fine)
+
+This can be changed back on vscode with:
+Ctrl+Shift+P -> CMake: Select Variant -> Debug
+
+if on mac download + unzip in sfml/Mac/
+[Download here: https://www.sfml-dev.org/download/sfml/3.0.2/#all-os](https://www.sfml-dev.org/download/sfml/3.0.2/#all-os)
