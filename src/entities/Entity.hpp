@@ -44,7 +44,9 @@ public:
   bool canAttack() const {
     return currentCooldown_ <= 0.0f;
   };
-
+  Player* getOwner()const{
+    return owner_;
+  }
   virtual void attack(Entity& target) { 
       target.takeDamage(damage_);
       currentCooldown_ = attackCooldown_;

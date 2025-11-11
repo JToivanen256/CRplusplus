@@ -13,6 +13,7 @@ static inline sf::Vector2f dirToVec(Direction dir){
         case Direction::UpRight:    return {1.f, -1.f};
         case Direction::DownLeft:   return {-1.f, 1.f};
         case Direction::DownRight:  return {1.f, 1.f};
+        default:                    return {0.f, 0.f};
     }
 }
 
