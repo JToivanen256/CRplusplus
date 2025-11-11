@@ -17,10 +17,9 @@ protected:
   sf::Vector2f posF_{0.f, 0.f};
 
   using CanMoveFn = std::function<bool(const sf::Vector2f& nextWorldPos)>;
-  using QueryFn   = std::function<void(const sf::Vector2f& center, float radius, std::vector<Entity*>& out)>;
-
+  
   CanMoveFn CanMoveTo_{};
-  QueryFn   queryEntities{};
+  
   
 
 

@@ -33,7 +33,7 @@ protected:
 public:
   Entity(int x, int y, int gridX, int gridY, int health, int damage, float attackCooldown, float attackRange, Player* owner)
     : position_{x, y}, gridPosition_{gridX, gridY}, health_(health), damage_(damage),
-      attackCooldown_(attackCooldown), attackRange_(attackRange), owner_(owner) {}
+      attackCooldown_(attackCooldown), attackRange_(attackRange), owner_(owner){}
 
   virtual ~Entity() = default;
 
@@ -44,6 +44,10 @@ public:
   bool canAttack() const {
     return currentCooldown_ <= 0.0f;
   };
+
+  Player* getOwner()const{
+    return owner_;
+  } 
 
   virtual void attack(Entity& target) { 
       target.takeDamage(damage_);
