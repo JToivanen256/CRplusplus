@@ -16,11 +16,11 @@ private:
   Player& player1_;
   Player& player2_;
   Map map_;
-  std::vector<std::unique_ptr<Unit>> units;
-  std::vector<std::unique_ptr<Building>> buildings;
-  std::vector<std::unique_ptr<Tower>> towers;
-  std::vector<std::unique_ptr<Projectile>> projectiles;
-  std::vector<std::unique_ptr<Spell>> spells;
+  std::vector<std::unique_ptr<Unit>> units_;
+  std::vector<std::unique_ptr<Building>> buildings_;
+  std::vector<std::unique_ptr<Tower>> towers_;
+  std::vector<std::unique_ptr<Projectile>> projectiles_;
+  std::vector<std::unique_ptr<Spell>> spells_;
 
 public:
   Match(Player& player1, Player& player2);
