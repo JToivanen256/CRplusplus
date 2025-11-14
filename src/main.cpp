@@ -8,6 +8,7 @@
 #include "players/Player.hpp"
 #include "ui/MatchState.hpp"
 #include "ui/MenuState.hpp"
+#include "ui/EndState.hpp"
 
 int main() {
   sf::RenderWindow window(sf::VideoMode(390, 780), "SFML App");
@@ -34,6 +35,20 @@ int main() {
     if (MenuState* menu = dynamic_cast<MenuState*>(currentState.get())) {
       if (menu->ongoingMatch_) {
         currentState = std::make_unique<MatchState>(player1, player2);
+      }
+    }
+
+      // If in MatchState and matchOver_ is true, switch to EndState
+    if (MatchState* match = dynamic_cast<MatchState*>(currentState.get())) {
+      if (match->matchOver_) {
+        currentState = std::make_unique<EndState>(window);
+      }
+    }
+
+    // If in EndState and returnToMenu_ is true, switch to MenuState
+    if (EndState* end = dynamic_cast<EndState*>(currentState.get())) {
+      if (end->returnToMenu_) {
+        currentState = std::make_unique<MenuState>(window);
       }
     }
   }
