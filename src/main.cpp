@@ -25,7 +25,7 @@ int main() {
       if (event.type == sf::Event::Closed) window.close();
     }
 
-    currentState->update(0.016f);
+    currentState->update(0.016f); //@lasse fix this
 
     window.clear();
     currentState->render(window);
@@ -41,7 +41,8 @@ int main() {
       // If in MatchState and matchOver_ is true, switch to EndState
     if (MatchState* match = dynamic_cast<MatchState*>(currentState.get())) {
       if (match->matchOver_) {
-        currentState = std::make_unique<EndState>(window);
+        std::string winner = match->getWinnerName();
+        currentState = std::make_unique<EndState>(window, winner);
       }
     }
 

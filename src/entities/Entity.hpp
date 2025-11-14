@@ -37,6 +37,10 @@ public:
 
   virtual ~Entity() = default;
 
+  int getHealth() const {
+    return health_;
+  }
+
   GridPos getGridPosition(){
     return gridPosition_;
   }

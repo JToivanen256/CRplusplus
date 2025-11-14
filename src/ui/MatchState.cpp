@@ -12,7 +12,12 @@ MatchState::MatchState(Player& p1, Player& p2)
   }
 }
 
-void MatchState::update(float deltaTime) { match_.update(deltaTime); }
+void MatchState::update(float deltaTime) { 
+  match_.update(deltaTime); 
+  if (match_.isOver()) {
+    matchOver_ = true;
+  }
+}
 
 void MatchState::handleInput(sf::RenderWindow& window, sf::Event event) {
   // Match input
@@ -40,5 +45,28 @@ void MatchState::render(sf::RenderWindow& window) {
 
     cardRenderer_.renderCard(card, window, {x, y},
                              {cardW / 256.f, cardH / 256.f}, font_);
+  }
+
+  // Show remaining time in the match by getting the info from Match
+  float remainingTime = match_.getRemainingTime();
+  int secs = static_cast<int>(remainingTime + 0.5f);
+  int minutes = secs / 60;
+  int seconds = secs % 60;
+  // Time format
+  std::string timeStr = std::to_string(minutes) + ":" + (seconds < 10 ? "0" : "") + std::to_string(seconds);
+
+  sf::Text time(timeStr, font_, 30);
+  time.setPosition(10, 10);
+  time.setFillColor(sf::Color::White);
+  window.draw(time);
+}
+
+std::string MatchState::getWinnerName() const {
+  Player* winner = match_.winner();
+  if (winner) {
+    return winner->getName();
+  } else {
+    // Shouldn't be possible
+    return "No winner wtf";
   }
 }

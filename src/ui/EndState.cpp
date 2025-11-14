@@ -1,12 +1,19 @@
 #include "EndState.hpp"
 #include <iostream>
 
-EndState::EndState(sf::RenderWindow& window) {
+EndState::EndState(sf::RenderWindow& window, const std::string& winnerName) : winnerName_(winnerName) {
+  // Setup end of game state
   if (!font_.loadFromFile("assets/fonts/MomoTrustDisplay-Regular.ttf")) {
     std::cerr << "Failed to load font!" << std::endl;
   }
   sf::Vector2u size = window.getSize();
   float center = size.x / 2.0f;
+
+  winnerText_.setFont(font_);
+  winnerText_.setCharacterSize(40);
+  winnerText_.setFillColor(sf::Color::Yellow);
+  winnerText_.setString(winnerName_ + " Wins!");
+  winnerText_.setPosition(center - winnerText_.getGlobalBounds().width / 2.0f, 150);
 
   sf::Text menuOption("Return to Menu", font_, 30);
   menuOption.setPosition(center - menuOption.getGlobalBounds().width / 2.0f, 300);
@@ -42,6 +49,7 @@ void EndState::handleInput(sf::RenderWindow& window, sf::Event event) {
 }
 
 void EndState::render(sf::RenderWindow& window) {
+  window.draw(winnerText_);
   for (const auto& option : endMenuOptions_) {
     window.draw(option);
   }

@@ -23,6 +23,7 @@ class MatchState : public GameState {
   virtual void update(float deltaTime) override;
   virtual void handleInput(sf::RenderWindow& window, sf::Event event) override;
   virtual void render(sf::RenderWindow& window) override;
+  std::string getWinnerName() const;
   bool matchOver_ = false;
 };
 
