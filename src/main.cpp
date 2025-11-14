@@ -11,7 +11,7 @@
 #include "ui/EndState.hpp"
 
 int main() {
-  sf::RenderWindow window(sf::VideoMode(390, 780), "SFML App");
+  sf::RenderWindow window(sf::VideoMode(390, 780), "CR++");
 
   Player player1 = Player("Test", defaultDeck);
   Player player2 = Player("Test2", defaultDeck);
