@@ -18,7 +18,7 @@ static inline sf::Vector2f dirToVec(Direction dir){
 }
 
 
-static inline void normalize(sf::Vector2f& v){
+static inline void normalize(sf::Vector2f& v){ 
     float len2 = v.x * v.x + v.y * v.y;
     if(len2 > 0.f){
         float inv = 1.f / std::sqrt(len2);

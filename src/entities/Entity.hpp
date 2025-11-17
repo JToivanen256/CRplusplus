@@ -77,6 +77,14 @@ public:
     window.draw(sprite_);
   }
 
+  void setTexture(const sf::Texture& text){
+    texture_ = text;
+    sprite_.setTexture(texture_);
+    auto size = texture_.getSize();
+    sprite_.setOrigin(size.x * 0.5f, size.y * 0.5f);
+    sprite_.setPosition((float)position_.x, (float)position_.y);
+  }
+
 };
 
 # endif 
