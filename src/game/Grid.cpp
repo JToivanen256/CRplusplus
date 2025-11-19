@@ -41,3 +41,7 @@ void Grid::draw(sf::RenderWindow& window)
         window.draw(t); 
     }
 }
+
+int Grid::GetTileSize()const{
+    return tileSize;
+}

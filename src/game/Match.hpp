@@ -1,6 +1,7 @@
 #ifndef MATCH_HPP
 #define MATCH_HPP
 
+#include "../players/UnitCard.hpp"
 #include "../players/Player.hpp"
 #include "Map.hpp"
 #include <vector>
@@ -43,41 +44,11 @@ public:
   Player* winner() const;
 
   float getRemainingTime() const;
+  std::vector<std::unique_ptr<Unit>> getUnits();
 
-  template <typename T, typename... Args>
-  T& Match::spawnUnit(Args&&... args){
-    static_assert(std::is_base_of_v<Unit, T>, "Must be a type of Unit");
-
-    auto uptr = std::make_unique<T>(std::forward<Args>(args)...);
-    T& ref = *uptr;
-    units.push_back(std::move(uptr));
-    return ref;
-  }
-
-
-  /**
-   * Use this method for spawning units on the grid.
-   * Usageway: match.spawnUnitOnGrid<Unittype>(gridX, gridY, owner) with
-   * Unittype replaced with the class of unit you want to spawn on the grid
-   */
-  template <typename T, typename... Args>
-  T& spawnUnitOnGrid(int gridX, int gridY, Player& owner, Args&&... extra){
-
-    Grid& grid = map_.getGrid();
-    int tileSize = getTileSizeFromGrid(grid);
-
-    int worldX = gridX * tileSize + tileSize / 2;
-    int worldY = gridY * tileSize + tileSize / 2;
-
-    return spawnUnit<T>(worldX, worldY, gridX, gridY, &owner, std::forward<Args>(extra)...);
-  }  
-
-
+  void addUnit(std::unique_ptr<Unit> unit);
+  void createUnitFromCard(const UnitCard& card, int gridX, int girdY, Player& owner);
 };
-
-static inline int getTileSizeFromGrid(Grid& g) {
-    return static_cast<int>(g.at(0, 0).getSize().x);
-}
 
 
 #endif

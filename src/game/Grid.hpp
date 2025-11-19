@@ -19,6 +19,6 @@ public:
     int getRows() const;
 
     sf::RectangleShape& at(int row, int col);
-
+    int GetTileSize()const;
 };
 
