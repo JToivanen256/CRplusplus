@@ -12,6 +12,7 @@
 
 int main() {
   sf::RenderWindow window(sf::VideoMode(390, 780), "CR++");
+  sf::Clock clock;
 
   Player player1 = Player("Test", defaultDeck);
   Player player2 = Player("Test2", defaultDeck);
@@ -25,7 +26,9 @@ int main() {
       if (event.type == sf::Event::Closed) window.close();
     }
 
-    currentState->update(0.016f); //@lasse fix this
+    float deltaTime = clock.restart().asSeconds();
+
+    currentState->update(1*deltaTime);
 
     window.clear();
     currentState->render(window);
