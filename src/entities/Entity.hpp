@@ -80,8 +80,8 @@ public:
 
     const sf::FloatRect bounds = sprite_.getGlobalBounds();
     const float barWidth = bounds.width;
-    const float barHeight = 6.f;
-    const float padding = 4.f;
+    const float barHeight = 3.f;
+    const float padding = 3.f;
     const float x = bounds.left;
     const float y = bounds.top - barHeight - padding;
 

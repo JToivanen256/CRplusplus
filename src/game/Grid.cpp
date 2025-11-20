@@ -145,7 +145,7 @@ void Grid::defaultGridMap()
                 else //WAter tiles
                 {
 
-                    t.shape.setFillColor(sf::Color::Blue);
+                    t.shape.setFillColor(sf::Color(0, 153, 255));
                     t.walkable = true;
                     t.cost = 1.f;
                     t.flag = TileFlag::Water;
