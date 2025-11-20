@@ -57,3 +57,31 @@
 - Pathfinding: use `getNeighbors` + `at(...).walkable` + `at(...).cost`. Optionally skip tiles where `isOccupied` is true.
 - Units: call `addOccupant` when entering a tile and `removeOccupant` when leaving.
 - If occupant ops become a bottleneck, replace `std::vector<int>` with `std::unordered_set<int>` for O(1) remove/find.
+
+
+
+## Movement pipeline (A* + Grid) — brief
+
+1. Convert positions
+   - world -> grid: Grid::worldToGrid(unitWorldPos) -> (row,col)
+   - world -> grid for the target (mouse click or goal)
+
+2. Pathfind
+   - Run A*: Pathfinding::aStar(grid, startR, startC, goalR, goalC, allowDiagonal, ignoreOccupied)
+   - A* reads Tile.walkable and Tile.cost; use Grid::isOccupied according to policy.
+
+3. Follow the path in world coordinates
+   - Convert each tile in path to a world point: Grid::gridToWorldCenter(r,c)
+   - Move the unit's sf::RectangleShape toward those centers smoothly (per-frame interpolation)
+   - On arriving a tile center: Grid::removeOccupant(prevR,prevC,id); Grid::addOccupant(r,c,id)
+
+4. Reservation & collisions
+   - Optionally "reserve" next tile early via addOccupant to avoid conflicts
+   - If multiple units allowed per tile, reservations still help prevent deadlocks
+
+5. Replan when necessary
+   - If path becomes blocked or the goal moves, rerun A* (on event or at intervals)
+
+
+
+   
