@@ -8,5 +8,8 @@ Grid& Map::getGrid() {
     return grid_;
 }
 
-
+void Map::generateDefaultMap()
+{
+  grid_.defaultGridMap();
+}
 
