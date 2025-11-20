@@ -1,18 +1,22 @@
 #include "Match.hpp"
-#include "../entities/DefaultTower.cpp"
+#include "../entities/DefaultTower.hpp"
 
 Match::Match(Player& player1, Player& player2)
   : player1_(player1), player2_(player2), map_(30, 50) {
-
+    
     switch (player1_.getTowerType()) {
-      case TowerType::Default:
-        towers_.emplace_back(std::make_unique<DefaultTower>(169, 39, 13, 3, 1000, 50, 1.5f, 100.0f, 4, true, &player1_));
+      case TowerType::Default:                            // n * tilesize (13), player2 is above on screen
+        towers_.emplace_back(std::make_unique<DefaultTower>(13 * 13, 43 * 13, true, &player1_));
+        towers_.emplace_back(std::make_unique<DefaultTower>(3 * 13, 41 * 13, false, &player1_));
+        towers_.emplace_back(std::make_unique<DefaultTower>(23 * 13, 41 * 13, false, &player1_));
         break;
     }
-    
+
     switch (player2_.getTowerType()) {
-      case TowerType::Default:
-        towers_.emplace_back(std::make_unique<DefaultTower>(169, 559, 13, 43, 1000, 50, 1.5f, 100.0f, 4, true, &player2_));
+      case TowerType::Default:                           
+        towers_.emplace_back(std::make_unique<DefaultTower>(13 * 13, 3 * 13, true, &player2_));
+        towers_.emplace_back(std::make_unique<DefaultTower>(3 * 13, 5 * 13, false, &player2_));
+        towers_.emplace_back(std::make_unique<DefaultTower>(23 * 13, 5 * 13, false, &player2_));
         break;
     }
     map_.generateDefaultMap();

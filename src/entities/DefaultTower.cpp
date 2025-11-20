@@ -1,25 +1,33 @@
-#include "Tower.hpp"
+#include "DefaultTower.hpp"
 #include "../players/Player.hpp"
+#include <stdexcept>
 
-class DefaultTower : public Tower {
-public:
-  DefaultTower(int x, int y, int gridX, int gridY, int health, int damage, float attackCooldown, float attackRange, int size, bool isKingTower, Player* owner)
-    : Tower(x, y, gridX, gridY, health, damage, attackCooldown, attackRange, size, isKingTower, owner) {
-      if (!texture_.loadFromFile("assets/sprites/tower.png")) {
-        throw std::runtime_error("Failed to load tower texture!");
-      }
+namespace {
+  static constexpr int HEALTH = 1000;
+  static constexpr int DAMAGE = 50;
+  static constexpr float ATTACK_COOLDOWN = 1.5f;
+  static constexpr float ATTACK_RANGE = 100.f;
+  static constexpr int SIZE_PIXELS = 52;
+}
 
-      sprite_.setTexture(texture_);
+// Grid position shouldn't matter and probably should be removed from entity.
+// Just calculate from pixel position when needed.
+DefaultTower::DefaultTower(int x, int y, bool isKingTower, Player* owner)
+  : Tower(x, y, /*gridX*/0, /*gridY*/0, HEALTH, DAMAGE, ATTACK_COOLDOWN, ATTACK_RANGE, SIZE_PIXELS, isKingTower, owner)
+{
+  if (!texture_.loadFromFile("assets/sprites/tower.png")) {
+    throw std::runtime_error("Failed to load tower texture!");
+  }
 
-      sprite_.setPosition(static_cast<float>(x), static_cast<float>(y));
+  sprite_.setTexture(texture_);
+  sprite_.setPosition(static_cast<float>(x), static_cast<float>(y));
 
-      sf::Vector2u texSize = texture_.getSize(); 
+  sf::Vector2u texSize = texture_.getSize();
+  float scaleX = static_cast<float>(SIZE_PIXELS) / static_cast<float>(texSize.x);
+  float scaleY = static_cast<float>(SIZE_PIXELS) / static_cast<float>(texSize.y);
+  sprite_.setScale(scaleX, scaleY);
+}
 
-      float scaleX = 52.f / texSize.x;
-      float scaleY = 52.f / texSize.y;
-
-      sprite_.setScale(scaleX, scaleY);
-    }
-
-  void update(float deltaTime) override {};
-};
+void DefaultTower::update(float deltaTime) {
+  // implement as needed
+}
