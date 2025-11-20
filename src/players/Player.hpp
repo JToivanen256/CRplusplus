@@ -6,6 +6,10 @@
 #include "Deck.hpp"
 #include "Hand.hpp"
 
+enum class TowerType {
+  Default
+};
+
 class Player {
  public:
   Player(const std::string& name, Deck deck);
@@ -17,6 +21,7 @@ class Player {
   Hand hand_;
   float elixirRegenRate_ = 1.0f;
   float elixirTimer_ = 0.0f;
+  TowerType towerType_ = TowerType::Default;
 
  public:
   // Regen elixir over time
@@ -34,6 +39,7 @@ class Player {
   const std::string& getName() const;
   int getElixir() const;
   const Hand& getHand() const;
+  const TowerType& getTowerType() const;
 };
 
 #endif

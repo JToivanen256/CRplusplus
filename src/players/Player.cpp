@@ -18,3 +18,5 @@ int Player::getElixir() const { return elixir_; }
 const Hand& Player::getHand() const { return hand_; }
 
 const std::string& Player::getName() const { return name_; }
+
+const TowerType& Player::getTowerType() const { return towerType_; }
