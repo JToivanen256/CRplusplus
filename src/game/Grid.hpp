@@ -15,6 +15,8 @@ public:
 
     void draw(sf::RenderWindow& window);
 
+    void defaultGridMap();
+
     int getColumns() const;
     int getRows() const;
 
