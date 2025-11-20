@@ -19,7 +19,7 @@ class Entity {
 protected:
   GridPos gridPosition_;
   Pos position_;
-  int maxHealth_;
+  int maxHealth_; // For health bar calculations
   int health_;
   int damage_;
   float currentCooldown_ = 0.0f;
@@ -78,6 +78,7 @@ public:
   void draw(sf::RenderWindow& window) {
     window.draw(sprite_);
 
+    // Draw health bar above the entity
     const sf::FloatRect bounds = sprite_.getGlobalBounds();
     const float barWidth = bounds.width;
     const float barHeight = 3.f;

@@ -23,7 +23,7 @@ class Player {
   float elixirRegenRate_ = 1.0f;
   float elixirTimer_ = 0.0f;
   TowerType towerType_ = TowerType::Default;
-  sf::Color color_;
+  sf::Color color_; // Color representing the player in-game
 
  public:
   // Regen elixir over time
