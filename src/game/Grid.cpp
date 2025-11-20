@@ -44,6 +44,24 @@ int Grid::toIndex(int row, int col) const
     return row * columns + col;
 }
 
+std::pair<int,int> Grid::worldToGrid(const sf::Vector2f& worldPos) const
+{
+    int col = static_cast<int>(worldPos.x) / tileSize;
+    int row = static_cast<int>(worldPos.y) / tileSize;
+    return {row, col};
+}
+
+sf::Vector2f Grid::gridToWorld(int row, int col) const
+{
+    return sf::Vector2f(static_cast<float>(col * tileSize), static_cast<float>(row * tileSize));
+}
+
+sf::Vector2f Grid::gridToWorldCenter(int row, int col) const
+{
+    auto topLeft = gridToWorld(row, col);
+    return topLeft + sf::Vector2f(tileSize * 0.5f, tileSize * 0.5f);
+}
+
 void Grid::addOccupant(int row, int col, int unitId)
 {
     if(!inBounds(row,col)) return;

@@ -40,6 +40,12 @@ public:
     int toIndex(int row, int col) const;
 
 
+    //Converts free coordinates to grid Tiles and vice versa 
+    std::pair<int,int> worldToGrid(const sf::Vector2f& worldPos) const;
+    sf::Vector2f gridToWorld(int row, int col) const; // just a helper for the centering function
+    sf::Vector2f gridToWorldCenter(int row, int col) const; //use this in the movement logic
+
+
 
     void addOccupant(int row, int col, int unitId);
     void removeOccupant(int row, int col, int unitId);
