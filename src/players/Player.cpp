@@ -20,3 +20,11 @@ const Hand& Player::getHand() const { return hand_; }
 const std::string& Player::getName() const { return name_; }
 
 const TowerType& Player::getTowerType() const { return towerType_; }
+
+void Player::setColor(const sf::Color& color) {
+  color_ = color;
+}
+
+const sf::Color& Player::getColor() const {
+  return color_;
+}

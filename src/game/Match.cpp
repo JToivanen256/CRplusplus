@@ -20,6 +20,9 @@ Match::Match(Player& player1, Player& player2)
         break;
     }
     map_.generateDefaultMap();
+
+    player1.setColor(sf::Color::Blue);
+    player2.setColor(sf::Color::Red);
   }
 
 

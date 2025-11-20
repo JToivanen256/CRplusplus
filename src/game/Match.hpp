@@ -1,6 +1,7 @@
 #ifndef MATCH_HPP
 #define MATCH_HPP
 
+#include <SFML/Graphics.hpp>
 #include "../players/Player.hpp"
 #include "Map.hpp"
 #include <vector>

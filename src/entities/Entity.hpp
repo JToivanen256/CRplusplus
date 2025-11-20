@@ -19,6 +19,7 @@ class Entity {
 protected:
   GridPos gridPosition_;
   Pos position_;
+  int maxHealth_;
   int health_;
   int damage_;
   float currentCooldown_ = 0.0f;
@@ -32,7 +33,7 @@ protected:
 
 public:
   Entity(int x, int y, int gridX, int gridY, int health, int damage, float attackCooldown, float attackRange, Player* owner)
-    : position_{x, y}, gridPosition_{gridX, gridY}, health_(health), damage_(damage),
+    : position_{x, y}, gridPosition_{gridX, gridY}, health_(health), maxHealth_(health), damage_(damage),
       attackCooldown_(attackCooldown), attackRange_(attackRange), owner_(owner) {}
 
   virtual ~Entity() = default;
@@ -65,6 +66,7 @@ public:
   void takeDamage(int amount) {
     health_ -= amount;
     if (health_ <= 0) {
+      health_ = 0;
       isAlive_ = false;
     }
   }
@@ -75,6 +77,28 @@ public:
 
   void draw(sf::RenderWindow& window) {
     window.draw(sprite_);
+
+    const sf::FloatRect bounds = sprite_.getGlobalBounds();
+    const float barWidth = bounds.width;
+    const float barHeight = 6.f;
+    const float padding = 4.f;
+    const float x = bounds.left;
+    const float y = bounds.top - barHeight - padding;
+
+    float healthPercent = static_cast<float>(health_) / static_cast<float>(maxHealth_);
+    sf::RectangleShape backgroundBar(sf::Vector2f(barWidth, barHeight));
+    backgroundBar.setFillColor(sf::Color(50, 50, 50, 200));
+    backgroundBar.setPosition(x, y);
+    backgroundBar.setOutlineColor(sf::Color::Black);
+    backgroundBar.setOutlineThickness(1.f);
+
+    sf::RectangleShape healthBar(sf::Vector2f(barWidth * healthPercent, barHeight));
+    healthBar.setFillColor(owner_->getColor());
+    healthBar.setPosition(x, y);
+
+    window.draw(backgroundBar);
+    window.draw(healthBar);
+
   }
 
   void setTexture(const sf::Texture& text){

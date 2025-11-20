@@ -5,6 +5,7 @@
 
 #include "Deck.hpp"
 #include "Hand.hpp"
+#include "SFML/Graphics.hpp"
 
 enum class TowerType {
   Default
@@ -22,6 +23,7 @@ class Player {
   float elixirRegenRate_ = 1.0f;
   float elixirTimer_ = 0.0f;
   TowerType towerType_ = TowerType::Default;
+  sf::Color color_;
 
  public:
   // Regen elixir over time
@@ -40,6 +42,10 @@ class Player {
   int getElixir() const;
   const Hand& getHand() const;
   const TowerType& getTowerType() const;
+
+  void setColor(const sf::Color& color);
+
+  const sf::Color& getColor() const;
 };
 
 #endif
