@@ -9,7 +9,7 @@ void Player::update(float deltaTime) {
     if (elixir_ < 10) {
       elixir_++;
     }
-    elixirTimer_ -= 1.0f;
+    elixirTimer_ = 0.0f;
   }
 }
 

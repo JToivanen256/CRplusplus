@@ -15,7 +15,7 @@ class Player {
   std::string name_;
   Deck deck_;
   Hand hand_;
-  float elixirRegenRate_ = 0.3f;
+  float elixirRegenRate_ = 1.0f;
   float elixirTimer_ = 0.0f;
 
  public:
