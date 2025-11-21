@@ -10,8 +10,11 @@ class Deck {
   Deck(const std::vector<Card>& cards);
   void addCard(const Card& card);
   void removeCard(const Card& card);
+  void playCard(const Card& card);
+  void shuffle();
+  std::vector<Card> getHand() const;
+  std::vector<Card> initializedHand();
   const std::vector<Card>& getCards() const;
-  std::vector<Card> initializeHand() const;
 
  private:
   std::vector<Card> cards_;

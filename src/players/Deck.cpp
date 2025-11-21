@@ -27,11 +27,31 @@ void Deck::removeCard(const Card& card) {
   }
 }
 
+void Deck::playCard(const Card& card) {
+  auto it = std::find_if(cards_.begin(), cards_.end(), [&card](const Card& c) {
+    return c.getName() == card.getName();
+  });
+  if (it != cards_.end()) {
+    Card played = *it;
+    cards_.erase(it);          // remove from current position
+    cards_.push_back(played);  // move to back
+  } else {
+    throw std::invalid_argument("Card not found in deck.");
+  }
+}
+
 const std::vector<Card>& Deck::getCards() const { return cards_; }
 
-std::vector<Card> Deck::initializeHand() const {
-  std::vector<Card> hand;
-  std::sample(cards_.begin(), cards_.end(), std::back_inserter(hand), 4,
-              std::mt19937{std::random_device{}()});
-  return hand;
+void Deck::shuffle() {  // Used when initializing hand
+  std::mt19937 rng{std::random_device{}()};
+  std::shuffle(cards_.begin(), cards_.end(), rng);
+}
+
+std::vector<Card> Deck::getHand() const {  // First 4 cards
+  return std::vector<Card>(cards_.begin(), cards_.begin() + 4);
+}
+
+std::vector<Card> Deck::initializedHand() {
+  this->shuffle();
+  return this->getHand();
 }

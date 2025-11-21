@@ -1,7 +1,7 @@
 #include "Player.hpp"
 
 Player::Player(const std::string& name, Deck deck)
-    : name_(name), deck_(deck), elixir_(0), hand_(deck.initializeHand()) {}
+    : name_(name), deck_(deck), elixir_(0), hand_(deck.initializedHand()) {}
 
 void Player::update(float deltaTime) {
   elixirTimer_ += deltaTime * elixirRegenRate_;
@@ -21,10 +21,6 @@ const std::string& Player::getName() const { return name_; }
 
 const TowerType& Player::getTowerType() const { return towerType_; }
 
-void Player::setColor(const sf::Color& color) {
-  color_ = color;
-}
+void Player::setColor(const sf::Color& color) { color_ = color; }
 
-const sf::Color& Player::getColor() const {
-  return color_;
-}
+const sf::Color& Player::getColor() const { return color_; }
