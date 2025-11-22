@@ -102,3 +102,41 @@ void Match::checkForWinner() {
 float Match::getRemainingTime() const {
   return std::max(0.0f, maxMatchTime_ - matchTime_);
 }
+
+std::vector<std::unique_ptr<Unit>> Match::getUnits(){
+  return units_;
+}
+
+void Match::addUnit(std::unique_ptr<Unit> unit){
+  units_.emplace_back(unit);
+}
+
+/**
+ * Instead of having separate classes inheriting from Unit have all the
+ * information for each unit type stored with the card including the 
+ * sprite for the unit
+*/
+void Match::createUnitFromCard(const UnitCard& card, int gridX, int gridY, Player& owner){
+  int tileSize = map_.getGrid().GetTileSize();
+  int worldX = gridX * tileSize + tileSize / 2;
+  int worldY = gridY * tileSize + tileSize / 2;
+
+  auto unit = std::make_unique<Unit>(
+    worldX, worldY,
+      gridX, gridY,
+      card.getHealth(),
+      card.getDamage(),
+      card.getAttackCooldown(),
+      card.getRange(),
+      card.getMovementSpeed(),
+      card.getRange(),
+      &owner
+  );
+  //unit->setTexture(card.getTexture());        //Would make the most sense to store unit sprite with the Card?
+  unit->syncVisual();
+  addUnit(std::move(unit));
+
+}
+
+
+

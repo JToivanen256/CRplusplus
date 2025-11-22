@@ -46,6 +46,10 @@ void MatchState::render(sf::RenderWindow& window) {
     cardRenderer_.renderCard(card, window, {x, y},
                              {cardW / 256.f, cardH / 256.f}, font_);
   }
+  std::vector<std::unique_ptr<Unit>> units = match_.getUnits();
+  for(const auto& unit: units){
+    unit->draw(window);
+  }
 
   // Show remaining time in the match by getting the info from Match
   float remainingTime = match_.getRemainingTime();

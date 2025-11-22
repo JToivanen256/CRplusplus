@@ -2,6 +2,7 @@
 #define MATCH_HPP
 
 #include <SFML/Graphics.hpp>
+#include "../players/UnitCard.hpp"
 #include "../players/Player.hpp"
 #include "Map.hpp"
 #include <vector>
@@ -44,7 +45,10 @@ public:
   Player* winner() const;
 
   float getRemainingTime() const;
+  std::vector<std::unique_ptr<Unit>> getUnits();
 
+  void addUnit(std::unique_ptr<Unit> unit);
+  void createUnitFromCard(const UnitCard& card, int gridX, int girdY, Player& owner);
 };
 
 
