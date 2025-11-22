@@ -117,7 +117,7 @@ void Match::addUnit(std::unique_ptr<Unit> unit){
  * sprite for the unit
 */
 void Match::createUnitFromCard(const UnitCard& card, int gridX, int gridY, Player& owner){
-  int tileSize = map_.getGrid().GetTileSize();
+  int tileSize = map_.getGrid().getTileSize();
   int worldX = gridX * tileSize + tileSize / 2;
   int worldY = gridY * tileSize + tileSize / 2;
 
