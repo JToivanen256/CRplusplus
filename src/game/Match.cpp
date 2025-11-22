@@ -103,12 +103,12 @@ float Match::getRemainingTime() const {
   return std::max(0.0f, maxMatchTime_ - matchTime_);
 }
 
-std::vector<std::unique_ptr<Unit>> Match::getUnits(){
+std::vector<std::unique_ptr<Unit>>& Match::getUnits(){
   return units_;
 }
 
 void Match::addUnit(std::unique_ptr<Unit> unit){
-  units_.emplace_back(unit);
+  units_.emplace_back(std::move(unit));
 }
 
 /**

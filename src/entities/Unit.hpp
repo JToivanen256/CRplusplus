@@ -36,6 +36,8 @@ public:
 
   void syncVisual();
 
+  virtual void update(float deltaTime)override{}
+
   //void heal(int amount); ?
 
 };
