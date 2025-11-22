@@ -1,15 +1,9 @@
 #include "Map.hpp"
 
+Map::Map(int width, int height) : grid_(width, height) {}
 
-Map::Map(int width, int height)
-  : grid_(width, height) {}
+Grid& Map::getGrid() { return grid_; }
 
-Grid& Map::getGrid() {
-    return grid_;
-}
+const Grid& Map::getGrid() const { return grid_; }
 
-void Map::generateDefaultMap()
-{
-  grid_.defaultGridMap();
-}
-
+void Map::generateDefaultMap() { grid_.defaultGridMap(); }

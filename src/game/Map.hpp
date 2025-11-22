@@ -1,24 +1,27 @@
 #ifndef MAP_HPP
 #define MAP_HPP
 
-#include "Tile.hpp"
-#include "Grid.hpp"
 #include <vector>
 
+#include "Grid.hpp"
+#include "Tile.hpp"
+
 class Map {
-public:
+ public:
   Map(int width, int height);
-  
+
   const Tile& getTile(int x, int y) const;
 
   Grid& getGrid();
+  const Grid& getGrid() const;
 
   void generateDefaultMap();
 
-  // Maybe first random paths to connect king towers, then wave collapse function to fill the rest?
+  // Maybe first random paths to connect king towers, then wave collapse
+  // function to fill the rest?
   void generateRandomMap();
-  
-private:
+
+ private:
   Grid grid_;
 };
 

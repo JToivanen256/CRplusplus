@@ -1,36 +1,81 @@
 #include "Match.hpp"
+
+#include <cstdint>
+
 #include "../entities/DefaultTower.hpp"
 
 Match::Match(Player& player1, Player& player2)
-  : player1_(player1), player2_(player2), map_(30, 50) {
-    
-    // This is not nice but it will do for now
-    switch (player1_.getTowerType()) {
-      case TowerType::Default:                            // n * tilesize (13), player2 is above on screen
-        towers_.emplace_back(std::make_unique<DefaultTower>(13 * 13, 43 * 13, true, &player1_));
-        towers_.emplace_back(std::make_unique<DefaultTower>(3 * 13, 41 * 13, false, &player1_));
-        towers_.emplace_back(std::make_unique<DefaultTower>(23 * 13, 41 * 13, false, &player1_));
-        break;
-    }
-
-    switch (player2_.getTowerType()) {
-      case TowerType::Default:                           
-        towers_.emplace_back(std::make_unique<DefaultTower>(13 * 13, 3 * 13, true, &player2_));
-        towers_.emplace_back(std::make_unique<DefaultTower>(3 * 13, 5 * 13, false, &player2_));
-        towers_.emplace_back(std::make_unique<DefaultTower>(23 * 13, 5 * 13, false, &player2_));
-        break;
-    }
-    map_.generateDefaultMap();
-
-    player1.setColor(sf::Color::Blue);
-    player2.setColor(sf::Color::Red);
+    : player1_(player1), player2_(player2), map_(30, 50) {
+  // This is not nice but it will do for now
+  switch (player1_.getTowerType()) {
+    case TowerType::Default:  // n * tilesize (13), player2 is above on screen
+      towers_.emplace_back(
+          std::make_unique<DefaultTower>(13 * 13, 43 * 13, true, &player1_));
+      towers_.emplace_back(
+          std::make_unique<DefaultTower>(3 * 13, 41 * 13, false, &player1_));
+      towers_.emplace_back(
+          std::make_unique<DefaultTower>(23 * 13, 41 * 13, false, &player1_));
+      break;
   }
 
+  switch (player2_.getTowerType()) {
+    case TowerType::Default:
+      towers_.emplace_back(
+          std::make_unique<DefaultTower>(13 * 13, 3 * 13, true, &player2_));
+      towers_.emplace_back(
+          std::make_unique<DefaultTower>(3 * 13, 5 * 13, false, &player2_));
+      towers_.emplace_back(
+          std::make_unique<DefaultTower>(23 * 13, 5 * 13, false, &player2_));
+      break;
+  }
+  map_.generateDefaultMap();
+
+  // Register towers as occupants on the grid (52 pixels = 4 tiles)
+  for (const auto& tower : towers_) {
+    sf::Vector2f towerPos = tower->getSprite().getPosition();
+    auto [towerRow, towerCol] = map_.getGrid().worldToGrid(towerPos);
+
+    // A tower is 4x4 tiles, mark all occupant tiles
+    for (int r = towerRow; r < towerRow + 4; r++) {
+      for (int c = towerCol; c < towerCol + 4; c++) {
+        if (map_.getGrid().inBounds(r, c)) {
+          map_.getGrid().addOccupant(
+              r, c, reinterpret_cast<intptr_t>(tower.get()) & 0x7fffffff);
+        }
+      }
+    }
+  }
+
+  player1.setColor(sf::Color::Blue);
+  player2.setColor(sf::Color::Red);
+}
 
 void Match::update(float deltaTime) {
-  if (isOver()) { return; };
+  if (isOver()) {
+    return;
+  };
   player1_.update(deltaTime);
   player2_.update(deltaTime);
+
+  // Update units
+  for (auto& u : units_) {
+    if (u) u->update(deltaTime);
+  }
+  // Remove dead units and clear their occupants
+  units_.erase(std::remove_if(units_.begin(), units_.end(),
+                              [this](const std::unique_ptr<Unit>& u) {
+                                if (!u) return true;
+                                if (u->isDead()) {
+                                  auto gp = u->getGridPosition();
+                                  map_.getGrid().removeOccupant(
+                                      gp.y, gp.x,
+                                      0);  // remove occupant id unknown; grid
+                                           // will handle removal if implemented
+                                  return true;
+                                }
+                                return false;
+                              }),
+               units_.end());
 
   checkForWinner();
   matchTime_ += deltaTime;
@@ -41,19 +86,21 @@ void Match::render(sf::RenderWindow& window) {
   for (const auto& tower : towers_) {
     tower->draw(window);
   }
+  // Draw units
+  for (const auto& u : units_) {
+    if (u && !u->isDead()) {
+      u->draw(window);
+    }
+  }
 }
 
 void Match::handleInput(sf::Event event) {
   // Handle match input
 }
 
-bool Match::isOver() const {
-  return winner_ != nullptr;
-}
+bool Match::isOver() const { return winner_ != nullptr; }
 
-Player* Match::winner() const {
-  return winner_;
-}
+Player* Match::winner() const { return winner_; }
 
 void Match::checkForWinner() {
   // Check if a player has lost his king tower
@@ -67,7 +114,8 @@ void Match::checkForWinner() {
     }
   }
 
-  // If time has ended and no winner yet, player who has destroyed more towers wins
+  // If time has ended and no winner yet, player who has destroyed more towers
+  // wins
   if (matchTime_ >= maxMatchTime_ && winner_ == nullptr) {
     int p1Towers = 0;
     int p1Health = 0;
@@ -89,7 +137,7 @@ void Match::checkForWinner() {
       winner_ = &player1_;
     } else if (p2Towers > p1Towers) {
       winner_ = &player2_;
-    } else { // If towers are even then check health
+    } else {  // If towers are even then check health
       if (p1Health >= p2Health) {
         winner_ = &player1_;
       } else {
@@ -101,4 +149,12 @@ void Match::checkForWinner() {
 
 float Match::getRemainingTime() const {
   return std::max(0.0f, maxMatchTime_ - matchTime_);
+}
+
+Map& Match::getMap() { return map_; }
+
+const Map& Match::getMap() const { return map_; }
+
+void Match::addUnit(std::unique_ptr<Unit> unit) {
+  units_.push_back(std::move(unit));
 }

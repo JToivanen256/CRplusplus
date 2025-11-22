@@ -7,9 +7,7 @@
 #include "Hand.hpp"
 #include "SFML/Graphics.hpp"
 
-enum class TowerType {
-  Default
-};
+enum class TowerType { Default };
 
 class Player {
  public:
@@ -23,7 +21,7 @@ class Player {
   float elixirRegenRate_ = 1.0f;
   float elixirTimer_ = 0.0f;
   TowerType towerType_ = TowerType::Default;
-  sf::Color color_; // Color representing the player in-game
+  sf::Color color_;  // Color representing the player in-game
 
  public:
   // Regen elixir over time
@@ -31,16 +29,20 @@ class Player {
 
   // Actions
   void drawCard();
-  void playCard(const Card& card);
+  bool playCard(const Card& card);
 
   // Deck and Hand
   void shuffleDeck();
   void initializeHand();
+  void updateHand();
 
   // Getters
   const std::string& getName() const;
   int getElixir() const;
   const Hand& getHand() const;
+  Hand& getHand();
+  const Deck& getDeck() const;
+  Deck& getDeck();
   const TowerType& getTowerType() const;
 
   void setColor(const sf::Color& color);

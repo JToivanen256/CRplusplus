@@ -2,20 +2,20 @@
 #define MATCH_HPP
 
 #include <SFML/Graphics.hpp>
-#include "../players/Player.hpp"
-#include "Map.hpp"
+#include <iostream>
+#include <memory>
 #include <vector>
-#include "../entities/Unit.hpp"
+
 #include "../entities/Building.hpp"
-#include "../entities/Tower.hpp"
 #include "../entities/Projectile.hpp"
 #include "../entities/Spell.hpp"
-#include <memory>
-
-
+#include "../entities/Tower.hpp"
+#include "../entities/Unit.hpp"
+#include "../players/Player.hpp"
+#include "Map.hpp"
 
 class Match {
-private:
+ private:
   Player& player1_;
   Player& player2_;
   Map map_;
@@ -32,8 +32,7 @@ private:
 
   sf::Texture basicTestUnitTexture_;
 
-public:
-
+ public:
   Match(Player& player1, Player& player2);
 
   void update(float deltaTime);
@@ -45,7 +44,19 @@ public:
 
   float getRemainingTime() const;
 
-};
+  Map& getMap();
+  const Map& getMap() const;
 
+  // Add a unit to the match (takes ownership)
+  void addUnit(std::unique_ptr<Unit> unit);
+
+  // Debug
+  void printUnitPositions() const {
+    for (const auto& unit : units_) {
+      GridPos gridPos = unit->getGridPosition();
+      std::cout << "Unit at grid (" << gridPos.x << ", " << gridPos.y << ")\n";
+    }
+  }
+};
 
 #endif

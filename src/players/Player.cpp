@@ -1,5 +1,7 @@
 #include "Player.hpp"
 
+#include <iostream>
+
 Player::Player(const std::string& name, Deck deck)
     : name_(name), deck_(deck), elixir_(0), hand_(deck.initializedHand()) {}
 
@@ -13,9 +15,29 @@ void Player::update(float deltaTime) {
   }
 }
 
+void Player::updateHand() { hand_ = Hand(deck_.getHand()); }
+
+bool Player::playCard(const Card& card) {
+  if (elixir_ >= card.getCost()) {
+    elixir_ -= card.getCost();
+    deck_.playCard(card);
+    this->updateHand();
+    return true;
+  } else {
+    std::cout << "Not enough elixir to play " << card.getName() << "!\n";
+    return false;
+  }
+}
+
 int Player::getElixir() const { return elixir_; }
 
 const Hand& Player::getHand() const { return hand_; }
+
+Hand& Player::getHand() { return hand_; }
+
+const Deck& Player::getDeck() const { return deck_; }
+
+Deck& Player::getDeck() { return deck_; }
 
 const std::string& Player::getName() const { return name_; }
 

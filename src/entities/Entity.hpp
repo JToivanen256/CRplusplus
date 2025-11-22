@@ -1,7 +1,8 @@
-# ifndef ENTITY_HPP
-# define ENTITY_HPP
+#ifndef ENTITY_HPP
+#define ENTITY_HPP
 
 #include <SFML/Graphics.hpp>
+
 #include "../players/Player.hpp"
 
 struct GridPos {
@@ -14,12 +15,11 @@ struct Pos {
   int y;
 };
 
-
 class Entity {
-protected:
+ protected:
   GridPos gridPosition_;
   Pos position_;
-  int maxHealth_; // For health bar calculations
+  int maxHealth_;  // For health bar calculations
   int health_;
   int damage_;
   float currentCooldown_ = 0.0f;
@@ -30,35 +30,36 @@ protected:
   sf::Texture texture_;
   Player* owner_;
 
-
-public:
-  Entity(int x, int y, int gridX, int gridY, int health, int damage, float attackCooldown, float attackRange, Player* owner)
-    : position_{x, y}, gridPosition_{gridX, gridY}, health_(health), maxHealth_(health), damage_(damage),
-      attackCooldown_(attackCooldown), attackRange_(attackRange), owner_(owner) {}
+ public:
+  Entity(int x, int y, int gridX, int gridY, int health, int damage,
+         float attackCooldown, float attackRange, Player* owner)
+      : position_{x, y},
+        gridPosition_{gridX, gridY},
+        health_(health),
+        maxHealth_(health),
+        damage_(damage),
+        attackCooldown_(attackCooldown),
+        attackRange_(attackRange),
+        owner_(owner) {}
 
   virtual ~Entity() = default;
 
-  int getHealth() const {
-    return health_;
-  }
+  int getHealth() const { return health_; }
 
-  GridPos getGridPosition(){
-    return gridPosition_;
-  }
-  Pos getPosition(){
-    return position_;
-  }
+  GridPos getGridPosition() { return gridPosition_; }
+  Pos getPosition() { return position_; }
 
-  // Can attack only if not on cooldown, Combat class should handle combat and ask if units aren't on cooldown
-  bool canAttack() const {
-    return currentCooldown_ <= 0.0f;
-  };
-  Player* getOwner()const{
-    return owner_;
-  }
-  virtual void attack(Entity& target) { 
-      target.takeDamage(damage_);
-      currentCooldown_ = attackCooldown_;
+  sf::Sprite& getSprite() { return sprite_; }
+
+  const sf::Sprite& getSprite() const { return sprite_; }
+
+  // Can attack only if not on cooldown, Combat class should handle combat and
+  // ask if units aren't on cooldown
+  bool canAttack() const { return currentCooldown_ <= 0.0f; };
+  Player* getOwner() const { return owner_; }
+  virtual void attack(Entity& target) {
+    target.takeDamage(damage_);
+    currentCooldown_ = attackCooldown_;
   }
 
   virtual void update(float deltaTime) = 0;
@@ -71,9 +72,7 @@ public:
     }
   }
 
-  bool isDead() const {
-    return !isAlive_;
-  }
+  bool isDead() const { return !isAlive_; }
 
   void draw(sf::RenderWindow& window) {
     window.draw(sprite_);
@@ -86,30 +85,30 @@ public:
     const float x = bounds.left;
     const float y = bounds.top - barHeight - padding;
 
-    float healthPercent = static_cast<float>(health_) / static_cast<float>(maxHealth_);
+    float healthPercent =
+        static_cast<float>(health_) / static_cast<float>(maxHealth_);
     sf::RectangleShape backgroundBar(sf::Vector2f(barWidth, barHeight));
     backgroundBar.setFillColor(sf::Color(50, 50, 50, 200));
     backgroundBar.setPosition(x, y);
     backgroundBar.setOutlineColor(sf::Color::Black);
     backgroundBar.setOutlineThickness(1.f);
 
-    sf::RectangleShape healthBar(sf::Vector2f(barWidth * healthPercent, barHeight));
+    sf::RectangleShape healthBar(
+        sf::Vector2f(barWidth * healthPercent, barHeight));
     healthBar.setFillColor(owner_->getColor());
     healthBar.setPosition(x, y);
 
     window.draw(backgroundBar);
     window.draw(healthBar);
-
   }
 
-  void setTexture(const sf::Texture& text){
+  void setTexture(const sf::Texture& text) {
     texture_ = text;
     sprite_.setTexture(texture_);
     auto size = texture_.getSize();
     sprite_.setOrigin(size.x * 0.5f, size.y * 0.5f);
     sprite_.setPosition((float)position_.x, (float)position_.y);
   }
-
 };
 
-# endif 
+#endif
