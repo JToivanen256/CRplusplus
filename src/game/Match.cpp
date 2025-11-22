@@ -92,6 +92,11 @@ void Match::addUnit(std::unique_ptr<Unit> unit){
   units_.emplace_back(unit);
 }
 
+/**
+ * Instead of having separate classes inheriting from Unit have all the
+ * information for each unit type stored with the card including the 
+ * sprite for the unit
+*/
 void Match::createUnitFromCard(const UnitCard& card, int gridX, int gridY, Player& owner){
   int tileSize = map_.getGrid().GetTileSize();
   int worldX = gridX * tileSize + tileSize / 2;
@@ -108,7 +113,7 @@ void Match::createUnitFromCard(const UnitCard& card, int gridX, int gridY, Playe
       card.getRange(),
       &owner
   );
-  //unit->setTexture(card.getTexture());        ----- Would make the most sense to store unit sprite with the Card?
+  //unit->setTexture(card.getTexture());        //Would make the most sense to store unit sprite with the Card?
   unit->syncVisual();
   addUnit(std::move(unit));
 
