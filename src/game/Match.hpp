@@ -12,6 +12,7 @@
 #include "../entities/Tower.hpp"
 #include "../entities/Unit.hpp"
 #include "../players/Player.hpp"
+#include "../players/UnitCard.hpp"
 #include "Map.hpp"
 
 class Match {
@@ -43,6 +44,7 @@ class Match {
   Player* winner() const;
 
   float getRemainingTime() const;
+  std::vector<std::unique_ptr<Unit>>& getUnits();
 
   Map& getMap();
   const Map& getMap() const;
@@ -57,6 +59,8 @@ class Match {
       std::cout << "Unit at grid (" << gridPos.x << ", " << gridPos.y << ")\n";
     }
   }
+  void createUnitFromCard(const UnitCard& card, int gridX, int girdY,
+                          Player& owner);
 };
 
 #endif

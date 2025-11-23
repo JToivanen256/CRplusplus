@@ -6,6 +6,7 @@
 class Card {
  public:
   Card(const std::string& name, int cost, bool isSpell);
+  virtual ~Card() = default;
 
   const std::string& getName() const;
   int getCost() const;

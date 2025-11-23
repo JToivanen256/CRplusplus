@@ -4,6 +4,7 @@
 #include <string>
 
 #include "../entities/TestUnit.hpp"
+#include "../players/UnitCard.hpp"
 #include "CardRenderer.hpp"
 
 MatchState::MatchState(Player& p1, Player& p2)
@@ -63,6 +64,10 @@ void MatchState::render(sf::RenderWindow& window) {
                      : cardY_;
 
     cardRenderer_.renderCard(card, window, {x, yPos}, {scale, scale}, font_);
+  }
+  std::vector<std::unique_ptr<Unit>>& units = match_.getUnits();
+  for (const auto& unit : units) {
+    unit->draw(window);
   }
 
   // Show remaining time in the match by getting the info from Match
@@ -166,20 +171,34 @@ bool MatchState::isValidSpawnPosition(int row, int col) const {
 }
 
 void MatchState::spawnUnit(int row, int col, const Card& card) {
-  // Create a concrete Unit based on the card. For now, default to TestUnit.
-  sf::Vector2f worldPos = match_.getMap().getGrid().gridToWorldCenter(row, col);
+  std::cout << card.isSpell() << std::endl;
+  if (!1) {  // if unitCard get sliced to Card this whole functionality crumbles
+             // ffs
+    // Use createUnitFromCard to spawn a unit that represents the card
+    // match_.createUnitFromCard(card, col, row, player1_);
+  } else {
+    // Fallback for non-unit cards (spell behavior TODO)
+    auto unit = std::make_unique<TestUnit>(
+        static_cast<int>(
+            match_.getMap().getGrid().gridToWorldCenter(row, col).x),
+        static_cast<int>(
+            match_.getMap().getGrid().gridToWorldCenter(row, col).y),
+        col, row, &player1_);
+    match_.addUnit(std::move(unit));
+  }
 
-  auto unit = std::make_unique<TestUnit>(static_cast<int>(worldPos.x),
-                                         static_cast<int>(worldPos.y), col, row,
-                                         &player1_);
-
-  // Register occupancy with unit id (use pointer address as an id if needed)
+  // Register occupancy with a simple id
   int unitId =
-      reinterpret_cast<intptr_t>(unit.get()) & 0x7fffffff;  // truncated id
+      static_cast<int>(row * 100 + col);  // Simple unique id based on position
   match_.getMap().getGrid().addOccupant(row, col, unitId);
 
-  match_.addUnit(std::move(unit));
-
+  // Debug prints
   std::cout << "Spawned unit for card '" << card.getName() << "' at grid ("
             << row << ", " << col << ")" << std::endl;
+
+  for (const auto& unit : match_.getUnits()) {
+    GridPos gp = unit->getGridPosition();
+    std::string cardName = unit->getName();
+    std::cout << cardName << " at grid (" << gp.x << ", " << gp.y << ")\n";
+  }
 }

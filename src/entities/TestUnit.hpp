@@ -11,7 +11,7 @@ class TestUnit : public Unit {
              /*attackCooldown*/ 0.6f,
              /*attackRange*/ 30.f,
              /*movementSpeed*/ 80.f,
-             /*visionRange*/ 160.f, owner) {
+             /*visionRange*/ 160.f, owner, "TESTUNIT") {
     sf::Image img;
     img.create(20, 20, sf::Color::Black);
 
