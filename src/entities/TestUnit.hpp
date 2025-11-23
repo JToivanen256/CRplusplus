@@ -4,8 +4,8 @@
 
 class TestUnit : public Unit {
  public:
-  TestUnit(int worldX, int worldY, int gridX, int gridY, Player* owner)
-      : Unit(worldX, worldY, gridX, gridY,
+  TestUnit(int worldX, int worldY, Player* owner)
+      : Unit(worldX, worldY,
              /*health*/ 100,
              /*damage*/ 10,
              /*attackCooldown*/ 0.6f,
@@ -18,12 +18,12 @@ class TestUnit : public Unit {
     sf::Texture tex;
     tex.loadFromImage(img);
     setTexture(tex);
-    syncVisual();
+    //syncVisual();
   }
 
   void update(float deltaTime) override {
     // For now, no AI movement — just keep visual in sync
-    syncVisual();
+    //syncVisual();
   }
 };
 

@@ -66,9 +66,12 @@ void Match::update(float deltaTime) {
                               [this](const std::unique_ptr<Unit>& u) {
                                 if (!u) return true;
                                 if (u->isDead()) {
-                                  auto gp = u->getGridPosition();
+                                  auto position = u->getPosition();
+                                  auto gp = map_.getGrid().worldToGrid(
+                                      sf::Vector2f((float)position.x,
+                                                   (float)position.y));
                                   map_.getGrid().removeOccupant(
-                                      gp.y, gp.x,
+                                      gp.second, gp.first,
                                       0);  // remove occupant id unknown; grid
                                            // will handle removal if implemented
                                   return true;
@@ -173,7 +176,7 @@ void Match::createUnitFromCard(const UnitCard& card, int gridX, int gridY,
   int worldY = gridY * tileSize + tileSize / 2;
 
   auto unit = std::make_unique<Unit>(
-      worldX, worldY, gridX, gridY, card.getHealth(), card.getDamage(),
+      worldX, worldY, card.getHealth(), card.getDamage(),
       card.getAttackCooldown(), card.getRange(), card.getMovementSpeed(),
       card.getRange(), &owner, card.getName());
   // unit->setTexture(card.getTexture());        //Would make the most sense to
@@ -182,7 +185,7 @@ void Match::createUnitFromCard(const UnitCard& card, int gridX, int gridY,
   addUnit(std::move(unit));
 
   for (const auto& unit : units_) {
-    GridPos gp = unit->getGridPosition();
+    Pos gp = unit->getPosition();
     std::string cardName = unit->getName();
     std::cout << cardName << " at (" << gp.x << ", " << gp.y << ")\n";
   }

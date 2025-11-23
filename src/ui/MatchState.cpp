@@ -183,7 +183,7 @@ void MatchState::spawnUnit(int row, int col, const Card& card) {
             match_.getMap().getGrid().gridToWorldCenter(row, col).x),
         static_cast<int>(
             match_.getMap().getGrid().gridToWorldCenter(row, col).y),
-        col, row, &player1_);
+        &player1_);
     match_.addUnit(std::move(unit));
   }
 
@@ -197,8 +197,8 @@ void MatchState::spawnUnit(int row, int col, const Card& card) {
             << row << ", " << col << ")" << std::endl;
 
   for (const auto& unit : match_.getUnits()) {
-    GridPos gp = unit->getGridPosition();
+    Pos pos = unit->getPosition();
     std::string cardName = unit->getName();
-    std::cout << cardName << " at grid (" << gp.x << ", " << gp.y << ")\n";
+    std::cout << cardName << " at grid (" << pos.x << ", " << pos.y << ")\n";
   }
 }

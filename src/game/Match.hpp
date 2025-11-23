@@ -55,8 +55,8 @@ class Match {
   // Debug
   void printUnitPositions() const {
     for (const auto& unit : units_) {
-      GridPos gridPos = unit->getGridPosition();
-      std::cout << "Unit at grid (" << gridPos.x << ", " << gridPos.y << ")\n";
+      Pos pos = unit->getPosition();
+      std::cout << "Unit at grid (" << pos.x << ", " << pos.y << ")\n";
     }
   }
   void createUnitFromCard(const UnitCard& card, int gridX, int girdY,

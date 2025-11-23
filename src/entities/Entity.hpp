@@ -5,10 +5,10 @@
 
 #include "../players/Player.hpp"
 
-struct GridPos {
+/*struct GridPos {
   int x;
   int y;
-};
+};*/
 
 struct Pos {
   int x;
@@ -17,7 +17,7 @@ struct Pos {
 
 class Entity {
  protected:
-  GridPos gridPosition_;
+  //GridPos gridPosition_;
   Pos position_;
   int maxHealth_;  // For health bar calculations
   int health_;
@@ -31,10 +31,10 @@ class Entity {
   Player* owner_;
 
  public:
-  Entity(int x, int y, int gridX, int gridY, int health, int damage,
+  Entity(int x, int y, int health, int damage,
          float attackCooldown, float attackRange, Player* owner)
       : position_{x, y},
-        gridPosition_{gridX, gridY},
+        //gridPosition_{gridX, gridY},
         health_(health),
         maxHealth_(health),
         damage_(damage),
@@ -46,7 +46,7 @@ class Entity {
 
   int getHealth() const { return health_; }
 
-  GridPos getGridPosition() { return gridPosition_; }
+  //GridPos getGridPosition() { return gridPosition_; }
   Pos getPosition() { return position_; }
 
   sf::Sprite& getSprite() { return sprite_; }

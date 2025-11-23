@@ -13,7 +13,7 @@ namespace {
 // Grid position shouldn't matter and probably should be removed from entity.
 // Just calculate from pixel position when needed.
 DefaultTower::DefaultTower(int x, int y, bool isKingTower, Player* owner)
-  : Tower(x, y, /*gridX*/0, /*gridY*/0, HEALTH, DAMAGE, ATTACK_COOLDOWN, ATTACK_RANGE, SIZE_PIXELS, isKingTower, owner)
+  : Tower(x, y, HEALTH, DAMAGE, ATTACK_COOLDOWN, ATTACK_RANGE, SIZE_PIXELS, isKingTower, owner)
 {
   if (!texture_.loadFromFile("assets/sprites/tower.png")) {
     throw std::runtime_error("Failed to load tower texture!");
