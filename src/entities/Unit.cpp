@@ -48,25 +48,25 @@ void Unit::move(Direction dir, float dt) {
   sf::Vector2f v = dirToVec(dir);
   normalize(v);
   v *= movementSpeed_ * dt;
-  const sf::Vector2f next = posF_ + v;
+  const sf::Vector2f next = position_ + v;
   if (!CanMoveTo_ || CanMoveTo_(next)) {
-    posF_ = next;
+    position_ = next;
   }
 }
 
 void Unit::moveToward(const sf::Vector2f& dest, float dt) {
-  sf::Vector2f v = dest - posF_;
+  sf::Vector2f v = dest - position_;
   normalize(v);
   v *= movementSpeed_ * dt;
-  const sf::Vector2f next = posF_ + v;
+  const sf::Vector2f next = position_ + v;
   if (!CanMoveTo_ || CanMoveTo_(next)) {
-    posF_ = next;
+    position_ = next;
   }
 }
 // finds the nearest enemy, building or unit to attack
 Entity* Unit::scanNearestEnemy(const std::vector<Entity*>& all) const {
   const float r2 = visionRange_ * visionRange_;
-  const sf::Vector2f me = posF_;
+  const sf::Vector2f me = position_;
 
   Entity* closest = nullptr;
   float closest_dist = std::numeric_limits<float>::max();
@@ -96,7 +96,7 @@ void Unit::drawVision(sf::RenderWindow& window, bool visible) const {
   }
   sf::CircleShape c(visionRange_);
   c.setOrigin(visionRange_, visionRange_);
-  c.setPosition(posF_);
+  c.setPosition(position_);
   c.setFillColor(sf::Color(0, 0, 255, 32));
   c.setOutlineColor(sf::Color(0, 0, 255, 128));
   c.setOutlineThickness(1.f);
@@ -104,11 +104,15 @@ void Unit::drawVision(sf::RenderWindow& window, bool visible) const {
 }
 // Syncs the sprite back to the center position of the unit. Can be useful?
 void Unit::syncVisual() {
-  position_.x = static_cast<int>(std::round(posF_.x));
-  position_.y = static_cast<int>(std::round(posF_.y));
-  sprite_.setPosition(posF_);
+  //position_.x = static_cast<int>(std::round(position_.x));
+  //position_.y = static_cast<int>(std::round(position_.y));
+  sprite_.setPosition(position_);
 }
 
 /*std::string Unit::getName() const {
     return "...";
 }*/
+
+void Unit::setTargetPosition(const sf::Vector2f& pos) {
+  targetPosition_ = pos;
+}

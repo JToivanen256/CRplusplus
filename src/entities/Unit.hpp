@@ -23,10 +23,10 @@ enum class Direction {
 
 class Unit : public Entity {
  protected:
+  sf::Vector2f targetPosition_;
   float movementSpeed_;
   float visionRange_;
   std::string name_;  // Debug
-  sf::Vector2f posF_{0.f, 0.f};
 
   using CanMoveFn = std::function<bool(const sf::Vector2f& nextWorldPos)>;
 
@@ -54,6 +54,8 @@ class Unit : public Entity {
   virtual void update(float deltaTime) override {}
 
   const std::string& getName() const { return name_; }  // Debug again
+
+  void setTargetPosition(const sf::Vector2f& pos);
 
   // void heal(int amount); ?
 };

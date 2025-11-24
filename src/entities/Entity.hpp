@@ -10,15 +10,15 @@
   int y;
 };*/
 
-struct Pos {
+/*struct Pos {
   int x;
   int y;
-};
+};*/
 
 class Entity {
  protected:
   //GridPos gridPosition_;
-  Pos position_;
+  sf::Vector2f position_;
   int maxHealth_;  // For health bar calculations
   int health_;
   int damage_;
@@ -31,7 +31,7 @@ class Entity {
   Player* owner_;
 
  public:
-  Entity(int x, int y, int health, int damage,
+  Entity(float x, float y, int health, int damage,
          float attackCooldown, float attackRange, Player* owner)
       : position_{x, y},
         //gridPosition_{gridX, gridY},
@@ -47,7 +47,7 @@ class Entity {
   int getHealth() const { return health_; }
 
   //GridPos getGridPosition() { return gridPosition_; }
-  Pos getPosition() { return position_; }
+  sf::Vector2f getPosition() { return position_; }
 
   sf::Sprite& getSprite() { return sprite_; }
 

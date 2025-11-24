@@ -11,7 +11,7 @@ struct GridPosition {
 
 class PathFinder {
 public:
-  std::vector<GridPosition> findPath(const GridPosition& start, const GridPosition& end);
+  std::vector<GridPosition> findPath(const GridPosition& start, const GridPosition& end) {}
 
 private:
   const Map& map_;

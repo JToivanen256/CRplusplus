@@ -197,7 +197,7 @@ void MatchState::spawnUnit(int row, int col, const Card& card) {
             << row << ", " << col << ")" << std::endl;
 
   for (const auto& unit : match_.getUnits()) {
-    Pos pos = unit->getPosition();
+    sf::Vector2f pos = unit->getPosition();
     std::string cardName = unit->getName();
     std::cout << cardName << " at grid (" << pos.x << ", " << pos.y << ")\n";
   }

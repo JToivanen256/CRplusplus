@@ -82,6 +82,20 @@ void Match::update(float deltaTime) {
 
   checkForWinner();
   matchTime_ += deltaTime;
+
+  std::vector<Entity*> entities = allEntities();
+
+  for (auto& unit : units_) {
+    auto target = unit->scanNearestEnemy(entities);
+    if (target) {
+      unit->setTargetPosition(target->getPosition());
+    } else {
+      // No target, move back to center
+      unit->setTargetPosition(
+          sf::Vector2f(map_.getGrid().getColumns() * 0.5f * 13.f,
+                       map_.getGrid().getRows() * 0.5f * 13.f));
+    }
+  }
 }
 
 void Match::render(sf::RenderWindow& window) {
@@ -185,8 +199,22 @@ void Match::createUnitFromCard(const UnitCard& card, int gridX, int gridY,
   addUnit(std::move(unit));
 
   for (const auto& unit : units_) {
-    Pos gp = unit->getPosition();
+    sf::Vector2f gp = unit->getPosition();
     std::string cardName = unit->getName();
     std::cout << cardName << " at (" << gp.x << ", " << gp.y << ")\n";
   }
+}
+
+std::vector<Entity*> Match::allEntities() {
+  std::vector<Entity*> entities;
+  for (const auto& unit : units_) {
+    entities.push_back(unit.get());
+  }
+  for (const auto& building : buildings_) {
+    entities.push_back(building.get());
+  }
+  for (const auto& tower : towers_) {
+    entities.push_back(tower.get());
+  }
+  return entities;
 }

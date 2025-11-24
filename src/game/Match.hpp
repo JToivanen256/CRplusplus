@@ -33,6 +33,8 @@ class Match {
 
   sf::Texture basicTestUnitTexture_;
 
+  std::vector<Entity*> allEntities();
+
  public:
   Match(Player& player1, Player& player2);
 
@@ -55,7 +57,7 @@ class Match {
   // Debug
   void printUnitPositions() const {
     for (const auto& unit : units_) {
-      Pos pos = unit->getPosition();
+      sf::Vector2f pos = unit->getPosition();
       std::cout << "Unit at grid (" << pos.x << ", " << pos.y << ")\n";
     }
   }
