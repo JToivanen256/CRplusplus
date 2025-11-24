@@ -29,7 +29,7 @@ class Player {
 
   // Actions
   void drawCard();
-  bool playCard(const Card& card);
+  bool playCard(const std::shared_ptr<Card>& card);
 
   // Deck and Hand
   void shuffleDeck();

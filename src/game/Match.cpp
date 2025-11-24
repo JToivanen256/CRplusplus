@@ -4,6 +4,7 @@
 #include <iostream>
 
 #include "../entities/DefaultTower.hpp"
+#include "../entities/TestUnit.hpp"
 
 Match::Match(Player& player1, Player& player2)
     : player1_(player1), player2_(player2), map_(30, 50) {
@@ -212,13 +213,13 @@ void Match::addUnit(std::unique_ptr<Unit> unit) {
 void Match::createUnitFromCard(const UnitCard& card, int gridX, int gridY,
                                Player& owner) {
   int tileSize = map_.getGrid().getTileSize();
-  int worldX = gridX * tileSize + tileSize / 2;
-  int worldY = gridY * tileSize + tileSize / 2;
+  float worldX = gridX * tileSize + tileSize / 2;
+  float worldY = gridY * tileSize + tileSize / 2;
 
-  auto unit = std::make_unique<Unit>(
+  auto unit = std::make_unique<TestUnit>(
       worldX, worldY, card.getHealth(), card.getDamage(),
-      card.getAttackCooldown(), card.getRange(), card.getMovementSpeed(),
-      card.getRange(), &owner, card.getName());
+      card.getAttackCooldown(), card.getAttackRange(), card.getMovementSpeed(),
+      card.getVisionRange(), &owner, card.getName());
   // unit->setTexture(card.getTexture());        //Would make the most sense to
   // store unit sprite with the Card?
   unit->syncVisual();

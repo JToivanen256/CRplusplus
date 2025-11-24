@@ -5,14 +5,11 @@
 
 class TestUnit : public Unit {
  public:
-  TestUnit(int worldX, int worldY, Player* owner)
-      : Unit(worldX, worldY,
-             /*health*/ 100,
-             /*damage*/ 50,
-             /*attackCooldown*/ 0.6f,
-             /*attackRange*/ 10.f,
-             /*movementSpeed*/ 40.f,
-             /*visionRange*/ 150.f, owner, "TESTUNIT") {
+  TestUnit(float x, float y, int health, int damage,
+           float attackCooldown, float attackRange, float movementSpeed,
+           float visionRange, Player* owner, const std::string& name)
+      : Unit(x, y, health, damage, attackCooldown, attackRange, movementSpeed,
+             visionRange, owner, name) {
     sf::Image img;
     img.create(20, 20, sf::Color::Black);
 

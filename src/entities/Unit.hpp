@@ -36,7 +36,7 @@ class Unit : public Entity {
   CanMoveFn CanMoveTo_{};
 
  public:
-  Unit(int x, int y, int health, int damage,
+  Unit(float x, float y, int health, int damage,
        float attackCooldown, float attackRange, float movementSpeed,
        float visionRange, Player* owner, const std::string& name)
       : Entity(x, y, health, damage, attackCooldown, attackRange,

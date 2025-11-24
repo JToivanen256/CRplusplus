@@ -3,7 +3,7 @@
 #include <stdexcept>
 
 namespace {
-  static constexpr int HEALTH = 1000;
+  static constexpr int HEALTH = 10000;
   static constexpr int DAMAGE = 50;
   static constexpr float ATTACK_COOLDOWN = 1.5f;
   static constexpr float ATTACK_RANGE = 100.f;
