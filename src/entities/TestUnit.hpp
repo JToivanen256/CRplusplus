@@ -8,11 +8,11 @@ class TestUnit : public Unit {
   TestUnit(int worldX, int worldY, Player* owner)
       : Unit(worldX, worldY,
              /*health*/ 100,
-             /*damage*/ 10,
+             /*damage*/ 50,
              /*attackCooldown*/ 0.6f,
              /*attackRange*/ 10.f,
-             /*movementSpeed*/ 20.f,
-             /*visionRange*/ 500.f, owner, "TESTUNIT") {
+             /*movementSpeed*/ 40.f,
+             /*visionRange*/ 150.f, owner, "TESTUNIT") {
     sf::Image img;
     img.create(20, 20, sf::Color::Black);
 

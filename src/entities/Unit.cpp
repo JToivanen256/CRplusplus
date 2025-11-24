@@ -151,21 +151,50 @@ void Unit::syncVisual() {
 
 void Unit::update(float deltaTime) {
   //std::cout << "Going towards: " << targetPosition_.x << ", " << targetPosition_.y << std::endl;
+  if (currentCooldown_ > 0.f) currentCooldown_ = std::max(0.f, currentCooldown_ - deltaTime);
 
-  if (path_.size() >= 2 && currentPathIndex_ < path_.size()) {
-    setTargetPosition(path_[currentPathIndex_]);
-    if (dist2(position_, targetPosition_) < 4.f) {
-      currentPathIndex_++;
+  // valid target?
+  if (target_ && !target_->isDead()) {
+    sf::Vector2f myPos = position_;
+    sf::FloatRect tb = target_->getSpriteBounds();
+    sf::Vector2f contact = clampPointToRect(tb, myPos); // nearest point on target
+    float d2 = dist2(myPos, contact);
+
+    if (d2 <= attackRange_ * attackRange_) {
+      // In attack range -> do NOT move, perform attack logic here
+      isAttacking_ = true;
+      // stop following path (do not call moveToward)
+      if (canAttack()) {
+        attack(*target_);
+        if (target_->isDead()) {
+          target_ = nullptr;
+          isAttacking_ = false;
+        }
+      }
+    } else {
+      isAttacking_ = false;
+      if (path_.size() >= 2 && currentPathIndex_ < path_.size()) {
+        setTargetPosition(path_[currentPathIndex_]);
+        if (dist2(position_, targetPosition_) < 4.f) {
+          currentPathIndex_++;
+        }
+      }
+      moveToward(targetPosition_, deltaTime);
     }
+  } else {
+    isAttacking_ = false;
+    if (path_.size() >= 2 && currentPathIndex_ < path_.size()) {
+      setTargetPosition(path_[currentPathIndex_]);
+      if (dist2(position_, targetPosition_) < 4.f) {
+        currentPathIndex_++;
+      }
+    }
+
+    moveToward(targetPosition_, deltaTime);
   }
 
-  moveToward(targetPosition_, deltaTime);
   syncVisual();
 }
-
-void Unit::setStateAttacking() { currentState_ = State::Attacking; }
-void Unit::setStateMoving() { currentState_ = State::Moving; }
-State Unit::getCurrentState() const { return currentState_; }
 
 void Unit::setPath(const std::vector<sf::Vector2f>& newPath) {
   path_ = newPath;
@@ -184,6 +213,6 @@ Entity* Unit::getTarget() const {
   return target_;
 }
 
-sf::Vector2f Unit::getLastTargetPoint() const { return targetPosition_; }
+sf::Vector2f Unit::getLastTargetPoint() const { return lastTargetPoint_; }
 
 void Unit::setLastTargetPoint(const sf::Vector2f& point) { lastTargetPoint_ = point; }

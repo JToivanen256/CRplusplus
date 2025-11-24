@@ -83,40 +83,42 @@ void Match::update(float deltaTime) {
   std::vector<Entity*> entities = allEntities();
 
   for (auto& unit : units_) {
-    auto target = unit->scanNearestEnemy(entities);
-    if (target.first) {
-      const float replanThreshold = 4.0f;
-      // I'm going insane
-      if (unit->getTarget() != target.first) {
-        unit->setTarget(target.first);
-        unit->setLastTargetPoint(target.second);
-        auto unitPos = unit->getPosition();
-        auto path = map_.findPath(unitPos, target.second);
-        if (path.size() >= 2) unit->setPath(path);
-      } else {
-        sf::Vector2f last = unit->getLastTargetPoint();
-        float dx = target.second.x - last.x;
-        float dy = target.second.y - last.y;
-        if ((dx*dx + dy*dy) > (replanThreshold * replanThreshold)) {
+    if (!unit->isAttacking()) {
+      auto target = unit->scanNearestEnemy(entities);
+      if (target.first) {
+        const float replanThreshold = 4.0f;
+        // I'm going insane
+        if (unit->getTarget() != target.first) {
+          unit->setTarget(target.first);
           unit->setLastTargetPoint(target.second);
           auto unitPos = unit->getPosition();
           auto path = map_.findPath(unitPos, target.second);
           if (path.size() >= 2) unit->setPath(path);
+        } else {
+          sf::Vector2f last = unit->getLastTargetPoint();
+          float dx = target.second.x - last.x;
+          float dy = target.second.y - last.y;
+          if ((dx*dx + dy*dy) > (replanThreshold * replanThreshold)) {
+            unit->setLastTargetPoint(target.second);
+            auto unitPos = unit->getPosition();
+            auto path = map_.findPath(unitPos, target.second);
+            if (path.size() >= 2) unit->setPath(path);
+          }
+        }
+      } else {
+        auto enemyKT = (unit->getOwner() == &player1_) ? getKingTowers().second : getKingTowers().first;
+        if (enemyKT && unit->getTarget() != enemyKT){
+          std::cout << "No target found, going for enemy king tower\n";
+          unit->setTarget(enemyKT);
+          auto TargetPos = enemyKT->getPosition();
+          auto unitPos = unit->getPosition();
+          auto path = map_.findPath(unitPos, TargetPos);
+          if (path.size() >= 2) {
+            unit->setPath(path);
+          }
         }
       }
-    } else {
-      auto enemyKT = (unit->getOwner() == &player1_) ? getKingTowers().second : getKingTowers().first;
-      if (enemyKT && unit->getTarget() != enemyKT){
-        std::cout << "No target found, going for enemy king tower\n";
-        unit->setTarget(enemyKT);
-        auto TargetPos = enemyKT->getPosition();
-        auto unitPos = unit->getPosition();
-        auto path = map_.findPath(unitPos, TargetPos);
-        if (path.size() >= 2) {
-          unit->setPath(path);
-        }
-      }
-    }
+    }   
       
     unit->update(deltaTime);
   }

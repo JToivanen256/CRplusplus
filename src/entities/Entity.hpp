@@ -30,6 +30,7 @@ class Entity {
   sf::Texture texture_;
   Player* owner_;
   Entity* target_ = nullptr;
+  bool isAttacking_ = false;
 
  public:
   Entity(float x, float y, int health, int damage,
@@ -57,7 +58,9 @@ class Entity {
   // Can attack only if not on cooldown, Combat class should handle combat and
   // ask if units aren't on cooldown
   bool canAttack() const { return currentCooldown_ <= 0.0f; };
+
   Player* getOwner() const { return owner_; }
+  
   virtual void attack(Entity& target) {
     target.takeDamage(damage_);
     currentCooldown_ = attackCooldown_;
@@ -112,6 +115,8 @@ class Entity {
   }
 
   auto getSpriteBounds() { return sprite_.getGlobalBounds(); }
+
+  bool isAttacking() const { return isAttacking_; }
 };
 
 #endif

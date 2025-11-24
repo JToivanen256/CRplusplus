@@ -35,8 +35,6 @@ class Unit : public Entity {
 
   CanMoveFn CanMoveTo_{};
 
-  State currentState_ = State::Moving;
-
  public:
   Unit(int x, int y, int health, int damage,
        float attackCooldown, float attackRange, float movementSpeed,
@@ -59,10 +57,6 @@ class Unit : public Entity {
   virtual void update(float deltaTime) override;
 
   const std::string& getName() const { return name_; }  // Debug again
-
-  void setStateAttacking();
-  void setStateMoving();
-  State getCurrentState() const;
 
   void setPath(const std::vector<sf::Vector2f>& newPath);
 
