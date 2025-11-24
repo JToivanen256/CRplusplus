@@ -1,6 +1,7 @@
 #ifndef TESTUNIT_HPP
 #define TESTUNIT_HPP
 #include "Unit.hpp"
+#include <iostream>
 
 class TestUnit : public Unit {
  public:
@@ -9,20 +10,15 @@ class TestUnit : public Unit {
              /*health*/ 100,
              /*damage*/ 10,
              /*attackCooldown*/ 0.6f,
-             /*attackRange*/ 30.f,
+             /*attackRange*/ 10.f,
              /*movementSpeed*/ 20.f,
-             /*visionRange*/ 160.f, owner, "TESTUNIT") {
+             /*visionRange*/ 500.f, owner, "TESTUNIT") {
     sf::Image img;
     img.create(20, 20, sf::Color::Black);
 
     sf::Texture tex;
     tex.loadFromImage(img);
     setTexture(tex);
-    syncVisual();
-  }
-
-  void update(float deltaTime) override {
-    moveToward(targetPosition_, deltaTime);
     syncVisual();
   }
 };

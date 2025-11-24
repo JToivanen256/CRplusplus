@@ -20,17 +20,21 @@ enum class Direction {
   DownLeft,
   DownRight
 };
-
+enum class State { Moving, Attacking };
 class Unit : public Entity {
  protected:
   sf::Vector2f targetPosition_;
   float movementSpeed_;
   float visionRange_;
   std::string name_;  // Debug
+  std::vector<sf::Vector2f> path_;
+  size_t currentPathIndex_ = 0;
 
   using CanMoveFn = std::function<bool(const sf::Vector2f& nextWorldPos)>;
 
   CanMoveFn CanMoveTo_{};
+
+  State currentState_ = State::Moving;
 
  public:
   Unit(int x, int y, int health, int damage,
@@ -51,11 +55,20 @@ class Unit : public Entity {
   void syncVisual();
 
   // std::string getName() const; //Debug
-  virtual void update(float deltaTime) override {}
+  virtual void update(float deltaTime) override;
 
   const std::string& getName() const { return name_; }  // Debug again
 
+  void setStateAttacking();
+  void setStateMoving();
+  State getCurrentState() const;
+
+  void setPath(const std::vector<sf::Vector2f>& newPath);
+
   void setTargetPosition(const sf::Vector2f& pos);
+
+  void setTarget(Entity* target);
+  Entity* getTarget() const;
 
   // void heal(int amount); ?
 };

@@ -29,6 +29,7 @@ class Entity {
   sf::Sprite sprite_;
   sf::Texture texture_;
   Player* owner_;
+  Entity* target_ = nullptr;
 
  public:
   Entity(float x, float y, int health, int damage,

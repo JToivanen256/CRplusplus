@@ -190,7 +190,7 @@ void MatchState::spawnUnit(int row, int col, const Card& card) {
   // Register occupancy with a simple id
   int unitId =
       static_cast<int>(row * 100 + col);  // Simple unique id based on position
-  match_.getMap().getGrid().addOccupant(row, col, unitId);
+  //match_.getMap().getGrid().addOccupant(row, col, unitId);
 
   // Debug prints
   std::cout << "Spawned unit for card '" << card.getName() << "' at grid ("

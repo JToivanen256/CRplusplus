@@ -113,6 +113,37 @@ void Unit::syncVisual() {
     return "...";
 }*/
 
+void Unit::update(float deltaTime) {
+  //std::cout << "Going towards: " << targetPosition_.x << ", " << targetPosition_.y << std::endl;
+
+  if (path_.size() >= 2 && currentPathIndex_ < path_.size()) {
+    setTargetPosition(path_[currentPathIndex_]);
+    if (dist2(position_, targetPosition_) < 4.f) {
+      currentPathIndex_++;
+    }
+  }
+
+  moveToward(targetPosition_, deltaTime);
+  syncVisual();
+}
+
+void Unit::setStateAttacking() { currentState_ = State::Attacking; }
+void Unit::setStateMoving() { currentState_ = State::Moving; }
+State Unit::getCurrentState() const { return currentState_; }
+
+void Unit::setPath(const std::vector<sf::Vector2f>& newPath) {
+  path_ = newPath;
+  currentPathIndex_ = 1; 
+}
+
 void Unit::setTargetPosition(const sf::Vector2f& pos) {
   targetPosition_ = pos;
+}
+
+void Unit::setTarget(Entity* target) {
+  target_ = target;
+}
+
+Entity* Unit::getTarget() const {
+  return target_;
 }

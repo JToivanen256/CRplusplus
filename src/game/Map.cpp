@@ -21,4 +21,102 @@ struct node {
 };
 
 std::vector<sf::Vector2f> Map::findPath(sf::Vector2f& from, sf::Vector2f& to) {
+  auto [startRow, startCol] = grid_.worldToGrid(from);
+  auto [goalRow, goalCol] = grid_.worldToGrid(to);
+
+  const int rows = grid_.getRows();
+  const int cols = grid_.getColumns();
+
+  if (startRow < 0 || startCol < 0 || goalRow < 0 || goalCol < 0 ||
+      startRow >= rows || startCol >= cols || goalRow >= rows || goalCol >= cols) {
+    return {};
+  }
+  if (startRow == goalRow && startCol == goalCol) {
+    return { grid_.gridToWorld(startRow, startCol) };
+  }
+
+  auto heuristic = [&](int r, int c) {
+    int dx = std::abs(r - goalRow);
+    int dy = std::abs(c - goalCol);
+    const float D = 1.0f;
+    const float D2 = 1.41421356237f;
+
+    return (D * (dx + dy) + (D2 - 2.0f * D) * std::min(dx, dy)) * 1.001f;
+  };
+
+  std::vector<std::vector<node>> nodes(rows, std::vector<node>(cols));
+  for (int r = 0; r < rows; ++r) {
+    for (int c = 0; c < cols; ++c) {
+      nodes[r][c].row = r;
+      nodes[r][c].col = c;
+      nodes[r][c].gCost = std::numeric_limits<float>::infinity();
+      nodes[r][c].hCost = heuristic(r, c);
+      nodes[r][c].parent = nullptr;
+    }
+  }
+
+  auto cmp = [&](node* a, node* b) {
+    float fA = a->fCost();
+    float fB = b->fCost();
+    
+    if (std::abs(fA - fB) < 0.0001f) {
+        return a->hCost > b->hCost;
+    }
+    return fA > fB; 
+  };
+
+  std::priority_queue<node*, std::vector<node*>, decltype(cmp)> openList(cmp);
+
+  node* startNode = &nodes[startRow][startCol];
+  startNode->gCost = 0.f;
+  openList.push(startNode);
+
+  std::vector<std::vector<char>> closedSet(rows, std::vector<char>(cols, 0));
+  node* goalNode = nullptr;
+
+  while (!openList.empty()) {
+    node* current = openList.top();
+    openList.pop();
+
+    if (closedSet[current->row][current->col]) continue;
+    closedSet[current->row][current->col] = 1;
+
+    if (current->row == goalRow && current->col == goalCol) {
+      goalNode = current;
+      break;
+    }
+
+    for (auto nb : grid_.getNeighbors(current->row, current->col, true)) {
+      int nr = nb.first;
+      int nc = nb.second;
+
+      // Bounds ja esteet
+      if (nr < 0 || nr >= rows || nc < 0 || nc >= cols) continue;
+      if (!grid_.at(nr, nc).walkable) continue;
+
+      if (closedSet[nr][nc]) continue; 
+      if (grid_.isOccupied(nr, nc) && !(nr == goalRow && nc == goalCol)) continue;
+
+      int dr = std::abs(nr - current->row);
+      int dc = std::abs(nc - current->col);
+      const float stepCost = (dr == 1 && dc == 1) ? 1.41421356237f : 1.0f;
+
+      float tentativeG = current->gCost + stepCost;
+      node* neighbour = &nodes[nr][nc];
+
+      if (tentativeG < neighbour->gCost) {
+        neighbour->gCost = tentativeG;
+        neighbour->parent = current;
+        openList.push(neighbour);
+      }
+    }
+  }
+
+  std::vector<sf::Vector2f> path;
+  if (!goalNode) return path;
+
+  for (node* cur = goalNode; cur != nullptr; cur = cur->parent)
+    path.push_back(grid_.gridToWorld(cur->row, cur->col));
+  std::reverse(path.begin(), path.end());
+  return path;
 }

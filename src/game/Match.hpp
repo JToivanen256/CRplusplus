@@ -45,6 +45,8 @@ class Match {
   bool isOver() const;
   Player* winner() const;
 
+  std::pair<Tower*, Tower*> getKingTowers() const;
+
   float getRemainingTime() const;
   std::vector<std::unique_ptr<Unit>>& getUnits();
 

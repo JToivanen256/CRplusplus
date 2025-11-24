@@ -1,6 +1,7 @@
 #include "Match.hpp"
 
 #include <cstdint>
+#include <iostream>
 
 #include "../entities/DefaultTower.hpp"
 
@@ -57,10 +58,6 @@ void Match::update(float deltaTime) {
   player1_.update(deltaTime);
   player2_.update(deltaTime);
 
-  // Update units
-  for (auto& u : units_) {
-    if (u) u->update(deltaTime);
-  }
   // Remove dead units and clear their occupants
   units_.erase(std::remove_if(units_.begin(), units_.end(),
                               [this](const std::unique_ptr<Unit>& u) {
@@ -88,13 +85,31 @@ void Match::update(float deltaTime) {
   for (auto& unit : units_) {
     auto target = unit->scanNearestEnemy(entities);
     if (target) {
-      unit->setTargetPosition(target->getPosition());
+      if (unit->getTarget() != target) {
+        std::cout << "Target found: " << target->getHealth() << "\n";
+        unit->setTarget(target);
+        auto targetPos = target->getPosition();
+        auto unitPos = unit->getPosition();
+        auto path = map_.findPath(unitPos, targetPos);
+        if (path.size() >= 2) {
+          unit->setPath(path);
+        }
+      }
     } else {
-      // No target, move back to center
-      unit->setTargetPosition(
-          sf::Vector2f(map_.getGrid().getColumns() * 0.5f * 13.f,
-                       map_.getGrid().getRows() * 0.5f * 13.f));
+      auto enemyKT = (unit->getOwner() == &player1_) ? getKingTowers().second : getKingTowers().first;
+      if (enemyKT && unit->getTarget() != enemyKT){
+        std::cout << "No target found, going for enemy king tower\n";
+        unit->setTarget(enemyKT);
+        auto TargetPos = enemyKT->getPosition();
+        auto unitPos = unit->getPosition();
+        auto path = map_.findPath(unitPos, TargetPos);
+        if (path.size() >= 2) {
+          unit->setPath(path);
+        }
+      }
     }
+      
+    unit->update(deltaTime);
   }
 }
 
@@ -217,4 +232,17 @@ std::vector<Entity*> Match::allEntities() {
     entities.push_back(tower.get());
   }
   return entities;
+}
+
+std::pair<Tower*, Tower*> Match::getKingTowers() const {
+  Tower* k1 = nullptr;
+  Tower* k2 = nullptr;
+  for (const auto& tptr : towers_) {
+    if (!tptr) continue;
+    Tower* t = tptr.get();
+    if (!t->isKingTower()) continue;
+    if (t->getOwner() == &player1_) k1 = t;
+    else if (t->getOwner() == &player2_) k2 = t;
+  }
+  return {k1, k2};
 }
