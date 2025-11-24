@@ -5,13 +5,10 @@
 #include <SFML/Graphics.hpp>
 
 #include "Grid.hpp"
-#include "Tile.hpp"
 
 class Map {
  public:
   Map(int width, int height);
-
-  const Tile& getTile(int x, int y) const;
 
   Grid& getGrid();
   const Grid& getGrid() const;

@@ -90,7 +90,6 @@ std::vector<sf::Vector2f> Map::findPath(sf::Vector2f& from, sf::Vector2f& to) {
       int nr = nb.first;
       int nc = nb.second;
 
-      // Bounds ja esteet
       if (nr < 0 || nr >= rows || nc < 0 || nc >= cols) continue;
       if (!grid_.at(nr, nc).walkable) continue;
 
