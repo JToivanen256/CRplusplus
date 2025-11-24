@@ -110,6 +110,8 @@ class Entity {
     sprite_.setOrigin(size.x * 0.5f, size.y * 0.5f);
     sprite_.setPosition((float)position_.x, (float)position_.y);
   }
+
+  auto getSpriteBounds() { return sprite_.getGlobalBounds(); }
 };
 
 #endif

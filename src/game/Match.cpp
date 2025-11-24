@@ -84,15 +84,24 @@ void Match::update(float deltaTime) {
 
   for (auto& unit : units_) {
     auto target = unit->scanNearestEnemy(entities);
-    if (target) {
-      if (unit->getTarget() != target) {
-        std::cout << "Target found: " << target->getHealth() << "\n";
-        unit->setTarget(target);
-        auto targetPos = target->getPosition();
+    if (target.first) {
+      const float replanThreshold = 4.0f;
+      // I'm going insane
+      if (unit->getTarget() != target.first) {
+        unit->setTarget(target.first);
+        unit->setLastTargetPoint(target.second);
         auto unitPos = unit->getPosition();
-        auto path = map_.findPath(unitPos, targetPos);
-        if (path.size() >= 2) {
-          unit->setPath(path);
+        auto path = map_.findPath(unitPos, target.second);
+        if (path.size() >= 2) unit->setPath(path);
+      } else {
+        sf::Vector2f last = unit->getLastTargetPoint();
+        float dx = target.second.x - last.x;
+        float dy = target.second.y - last.y;
+        if ((dx*dx + dy*dy) > (replanThreshold * replanThreshold)) {
+          unit->setLastTargetPoint(target.second);
+          auto unitPos = unit->getPosition();
+          auto path = map_.findPath(unitPos, target.second);
+          if (path.size() >= 2) unit->setPath(path);
         }
       }
     } else {

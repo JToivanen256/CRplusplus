@@ -64,7 +64,7 @@ void Unit::moveToward(const sf::Vector2f& dest, float dt) {
   }
 }
 // finds the nearest enemy, building or unit to attack
-Entity* Unit::scanNearestEnemy(const std::vector<Entity*>& all) const {
+/*Entity* Unit::scanNearestEnemy(const std::vector<Entity*>& all) const {
   const float r2 = visionRange_ * visionRange_;
   const sf::Vector2f me = position_;
 
@@ -86,6 +86,42 @@ Entity* Unit::scanNearestEnemy(const std::vector<Entity*>& all) const {
     }
   }
   return closest;
+}*/
+static inline sf::Vector2f clampPointToRect(const sf::FloatRect& r, const sf::Vector2f& p) {
+  sf::Vector2f out;
+  out.x = std::max(r.left, std::min(r.left + r.width, p.x));
+  out.y = std::max(r.top,  std::min(r.top + r.height, p.y));
+  return out;
+}
+
+std::pair<Entity*, sf::Vector2f> Unit::scanNearestEnemy(const std::vector<Entity*>& all) const {
+  const float vision = visionRange_;
+  const float r2 = vision * vision;
+  const sf::Vector2f me = position_;
+
+  Entity* closest = nullptr;
+  float bestEdgeDist2 = std::numeric_limits<float>::max();
+  sf::Vector2f bestPoint{0.f, 0.f};
+
+  for (Entity* e : all) {
+    if (!e || e == this || e->isDead() || e->getOwner() == this->owner_)
+      continue;
+
+    sf::FloatRect b = e->getSpriteBounds();
+
+    sf::Vector2f cp = clampPointToRect(b, me);
+
+    float d2 = dist2(me, cp);
+    if (d2 <= r2) {
+      if (d2 < bestEdgeDist2) {
+        bestEdgeDist2 = d2;
+        closest = e;
+        bestPoint = cp;
+      }
+    }
+  }
+
+  return { closest, bestPoint };
 }
 
 // this draws a circle showing the vision range of an unit and can be used for
@@ -147,3 +183,7 @@ void Unit::setTarget(Entity* target) {
 Entity* Unit::getTarget() const {
   return target_;
 }
+
+sf::Vector2f Unit::getLastTargetPoint() const { return targetPosition_; }
+
+void Unit::setLastTargetPoint(const sf::Vector2f& point) { lastTargetPoint_ = point; }

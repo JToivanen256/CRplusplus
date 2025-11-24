@@ -29,6 +29,7 @@ class Unit : public Entity {
   std::string name_;  // Debug
   std::vector<sf::Vector2f> path_;
   size_t currentPathIndex_ = 0;
+  sf::Vector2f lastTargetPoint_{0.f,0.f};
 
   using CanMoveFn = std::function<bool(const sf::Vector2f& nextWorldPos)>;
 
@@ -48,7 +49,7 @@ class Unit : public Entity {
   void move(Direction dir, float dt);
   void moveToward(const sf::Vector2f& dest, float dt);
 
-  Entity* scanNearestEnemy(const std::vector<Entity*>& all) const;
+  std::pair<Entity*, sf::Vector2f> scanNearestEnemy(const std::vector<Entity*>& all) const;
 
   void drawVision(sf::RenderWindow& window, bool visible = true) const;
 
@@ -69,6 +70,9 @@ class Unit : public Entity {
 
   void setTarget(Entity* target);
   Entity* getTarget() const;
+
+  sf::Vector2f getLastTargetPoint() const;
+    void setLastTargetPoint(const sf::Vector2f& point);
 
   // void heal(int amount); ?
 };
