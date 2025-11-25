@@ -1,8 +1,10 @@
 #include "Match.hpp"
 
 #include <cstdint>
+#include <iostream>
 
 #include "../entities/DefaultTower.hpp"
+#include "../entities/TestUnit.hpp"
 
 Match::Match(Player& player1, Player& player2)
     : player1_(player1), player2_(player2), map_(30, 50) {
@@ -57,18 +59,17 @@ void Match::update(float deltaTime) {
   player1_.update(deltaTime);
   player2_.update(deltaTime);
 
-  // Update units
-  for (auto& u : units_) {
-    if (u) u->update(deltaTime);
-  }
   // Remove dead units and clear their occupants
   units_.erase(std::remove_if(units_.begin(), units_.end(),
                               [this](const std::unique_ptr<Unit>& u) {
                                 if (!u) return true;
                                 if (u->isDead()) {
-                                  auto gp = u->getGridPosition();
+                                  auto position = u->getPosition();
+                                  auto gp = map_.getGrid().worldToGrid(
+                                      sf::Vector2f((float)position.x,
+                                                   (float)position.y));
                                   map_.getGrid().removeOccupant(
-                                      gp.y, gp.x,
+                                      gp.second, gp.first,
                                       0);  // remove occupant id unknown; grid
                                            // will handle removal if implemented
                                   return true;
@@ -79,6 +80,49 @@ void Match::update(float deltaTime) {
 
   checkForWinner();
   matchTime_ += deltaTime;
+
+  std::vector<Entity*> entities = allEntities();
+
+  for (auto& unit : units_) {
+    if (!unit->isAttacking()) {
+      auto target = unit->scanNearestEnemy(entities);
+      if (target.first) {
+        const float replanThreshold = 4.0f;
+        // I'm going insane
+        if (unit->getTarget() != target.first) {
+          unit->setTarget(target.first);
+          unit->setLastTargetPoint(target.second);
+          auto unitPos = unit->getPosition();
+          auto path = map_.findPath(unitPos, target.second);
+          if (path.size() >= 2) unit->setPath(path);
+        } else {
+          sf::Vector2f last = unit->getLastTargetPoint();
+          float dx = target.second.x - last.x;
+          float dy = target.second.y - last.y;
+          if ((dx*dx + dy*dy) > (replanThreshold * replanThreshold)) {
+            unit->setLastTargetPoint(target.second);
+            auto unitPos = unit->getPosition();
+            auto path = map_.findPath(unitPos, target.second);
+            if (path.size() >= 2) unit->setPath(path);
+          }
+        }
+      } else {
+        auto enemyKT = (unit->getOwner() == &player1_) ? getKingTowers().second : getKingTowers().first;
+        if (enemyKT && unit->getTarget() != enemyKT){
+          std::cout << "No target found, going for enemy king tower\n";
+          unit->setTarget(enemyKT);
+          auto TargetPos = enemyKT->getPosition();
+          auto unitPos = unit->getPosition();
+          auto path = map_.findPath(unitPos, TargetPos);
+          if (path.size() >= 2) {
+            unit->setPath(path);
+          }
+        }
+      }
+    }   
+      
+    unit->update(deltaTime);
+  }
 }
 
 void Match::render(sf::RenderWindow& window) {
@@ -169,21 +213,65 @@ void Match::addUnit(std::unique_ptr<Unit> unit) {
 void Match::createUnitFromCard(const UnitCard& card, int gridX, int gridY,
                                Player& owner) {
   int tileSize = map_.getGrid().getTileSize();
-  int worldX = gridX * tileSize + tileSize / 2;
-  int worldY = gridY * tileSize + tileSize / 2;
+  float worldX = gridX * tileSize + tileSize / 2;
+  float worldY = gridY * tileSize + tileSize / 2;
 
-  auto unit = std::make_unique<Unit>(
-      worldX, worldY, gridX, gridY, card.getHealth(), card.getDamage(),
-      card.getAttackCooldown(), card.getRange(), card.getMovementSpeed(),
-      card.getRange(), &owner, card.getName());
-  // unit->setTexture(card.getTexture());        //Would make the most sense to
-  // store unit sprite with the Card?
+  auto unit = std::make_unique<TestUnit>(
+      worldX, worldY, card.getHealth(), card.getDamage(),
+      card.getAttackCooldown(), card.getAttackRange(), card.getMovementSpeed(),
+      card.getVisionRange(), &owner, card.getName());
+
+  {
+    std::string spritePath = "assets/sprites/" + card.getSpritePath();
+    auto tex = std::make_shared<sf::Texture>();
+    if (tex->loadFromFile(spritePath)) {
+      unit->setTextureShared(tex);
+
+      int tileSize = map_.getGrid().getTileSize();
+      float desiredPx = tileSize * 1.5f; 
+      auto ts = tex->getSize();
+      if (ts.x > 0 && ts.y > 0) {
+        unit->getSprite().setScale(desiredPx / static_cast<float>(ts.x),
+                                   desiredPx / static_cast<float>(ts.y));
+      }
+    } else {
+      std::cerr << "Failed to load texture: " << spritePath << "\n";
+    }
+  }
+
   unit->syncVisual();
   addUnit(std::move(unit));
 
   for (const auto& unit : units_) {
-    GridPos gp = unit->getGridPosition();
+    sf::Vector2f gp = unit->getPosition();
     std::string cardName = unit->getName();
     std::cout << cardName << " at (" << gp.x << ", " << gp.y << ")\n";
   }
+}
+
+std::vector<Entity*> Match::allEntities() {
+  std::vector<Entity*> entities;
+  for (const auto& unit : units_) {
+    entities.push_back(unit.get());
+  }
+  for (const auto& building : buildings_) {
+    entities.push_back(building.get());
+  }
+  for (const auto& tower : towers_) {
+    entities.push_back(tower.get());
+  }
+  return entities;
+}
+
+std::pair<Tower*, Tower*> Match::getKingTowers() const {
+  Tower* k1 = nullptr;
+  Tower* k2 = nullptr;
+  for (const auto& tptr : towers_) {
+    if (!tptr) continue;
+    Tower* t = tptr.get();
+    if (!t->isKingTower()) continue;
+    if (t->getOwner() == &player1_) k1 = t;
+    else if (t->getOwner() == &player2_) k2 = t;
+  }
+  return {k1, k2};
 }

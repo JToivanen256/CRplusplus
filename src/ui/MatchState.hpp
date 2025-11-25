@@ -29,7 +29,7 @@ class MatchState : public GameState {
   bool handleCardClick(sf::Vector2f mousePos);
   void handleGridClick(sf::Vector2f mousePos);
   bool isValidSpawnPosition(int row, int col) const;
-  void spawnUnit(int row, int col, const Card& card);
+  void spawnUnit(int row, int col, const std::shared_ptr<Card>& cardPtr);
 
  public:
   MatchState(Player& p1, Player& p2);

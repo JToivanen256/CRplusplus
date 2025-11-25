@@ -9,15 +9,15 @@ class Projectile {
 protected:
   float speed_;
   int damage_;
-  Pos position_;
-  Pos targetPosition_;
+  sf::Vector2f position_;
+  sf::Vector2f targetPosition_;
   sf::Sprite sprite_;
   sf::Texture texture_;
   Player* owner_;
 
 
 public:
-  Projectile(int x, int y, float speed, int damage, Pos targetPosition, Player* owner);
+  Projectile(int x, int y, float speed, int damage, sf::Vector2f targetPosition, Player* owner);
 
   void move();
 

@@ -45,8 +45,6 @@ public:
     sf::Vector2f gridToWorld(int row, int col) const; // just a helper for the centering function
     sf::Vector2f gridToWorldCenter(int row, int col) const; //use this in the movement logic
 
-
-
     void addOccupant(int row, int col, int unitId);
     void removeOccupant(int row, int col, int unitId);
     const std::vector<int>& getOccupants(int row, int col) const;

@@ -8,7 +8,7 @@
 class Spell {
 protected:
   float radius_;
-  Pos centerPosition_;
+  sf::Vector2f centerPosition_;
   int damage_;
   float duration_;
   Player* owner_;

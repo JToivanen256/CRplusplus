@@ -44,8 +44,8 @@ std::pair<int, int> Grid::worldToGrid(const sf::Vector2f& worldPos) const {
 }
 
 sf::Vector2f Grid::gridToWorld(int row, int col) const {
-  return sf::Vector2f(static_cast<float>(col * tileSize),
-                      static_cast<float>(row * tileSize));
+  return sf::Vector2f(static_cast<float>(col * tileSize) + tileSize * 0.5f,
+                      static_cast<float>(row * tileSize) + tileSize * 0.5f);
 }
 
 sf::Vector2f Grid::gridToWorldCenter(int row, int col) const {

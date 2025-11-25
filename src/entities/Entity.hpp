@@ -5,20 +5,20 @@
 
 #include "../players/Player.hpp"
 
-struct GridPos {
+/*struct GridPos {
   int x;
   int y;
-};
+};*/
 
-struct Pos {
+/*struct Pos {
   int x;
   int y;
-};
+};*/
 
 class Entity {
  protected:
-  GridPos gridPosition_;
-  Pos position_;
+  //GridPos gridPosition_;
+  sf::Vector2f position_;
   int maxHealth_;  // For health bar calculations
   int health_;
   int damage_;
@@ -27,14 +27,16 @@ class Entity {
   float attackRange_;
   bool isAlive_ = true;
   sf::Sprite sprite_;
-  sf::Texture texture_;
+  std::shared_ptr<sf::Texture> texturePtr_;
   Player* owner_;
+  Entity* target_ = nullptr;
+  bool isAttacking_ = false;
 
  public:
-  Entity(int x, int y, int gridX, int gridY, int health, int damage,
+  Entity(float x, float y, int health, int damage,
          float attackCooldown, float attackRange, Player* owner)
       : position_{x, y},
-        gridPosition_{gridX, gridY},
+        //gridPosition_{gridX, gridY},
         health_(health),
         maxHealth_(health),
         damage_(damage),
@@ -46,8 +48,8 @@ class Entity {
 
   int getHealth() const { return health_; }
 
-  GridPos getGridPosition() { return gridPosition_; }
-  Pos getPosition() { return position_; }
+  //GridPos getGridPosition() { return gridPosition_; }
+  sf::Vector2f getPosition() { return position_; }
 
   sf::Sprite& getSprite() { return sprite_; }
 
@@ -56,7 +58,9 @@ class Entity {
   // Can attack only if not on cooldown, Combat class should handle combat and
   // ask if units aren't on cooldown
   bool canAttack() const { return currentCooldown_ <= 0.0f; };
+
   Player* getOwner() const { return owner_; }
+
   virtual void attack(Entity& target) {
     target.takeDamage(damage_);
     currentCooldown_ = attackCooldown_;
@@ -102,13 +106,19 @@ class Entity {
     window.draw(healthBar);
   }
 
-  void setTexture(const sf::Texture& text) {
-    texture_ = text;
-    sprite_.setTexture(texture_);
-    auto size = texture_.getSize();
-    sprite_.setOrigin(size.x * 0.5f, size.y * 0.5f);
-    sprite_.setPosition((float)position_.x, (float)position_.y);
+  void setTextureShared(const std::shared_ptr<sf::Texture>& tex) {
+    texturePtr_ = tex;
+    if (texturePtr_) {
+      sprite_.setTexture(*texturePtr_);
+      auto size = texturePtr_->getSize();
+      //sprite_.setOrigin(size.x * 0.5f, size.y * 0.5f);
+      sprite_.setPosition(position_);
+    }
   }
+
+  auto getSpriteBounds() { return sprite_.getGlobalBounds(); }
+
+  bool isAttacking() const { return isAttacking_; }
 };
 
 #endif

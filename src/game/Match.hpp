@@ -33,6 +33,8 @@ class Match {
 
   sf::Texture basicTestUnitTexture_;
 
+  std::vector<Entity*> allEntities();
+
  public:
   Match(Player& player1, Player& player2);
 
@@ -42,6 +44,8 @@ class Match {
 
   bool isOver() const;
   Player* winner() const;
+
+  std::pair<Tower*, Tower*> getKingTowers() const;
 
   float getRemainingTime() const;
   std::vector<std::unique_ptr<Unit>>& getUnits();
@@ -55,8 +59,8 @@ class Match {
   // Debug
   void printUnitPositions() const {
     for (const auto& unit : units_) {
-      GridPos gridPos = unit->getGridPosition();
-      std::cout << "Unit at grid (" << gridPos.x << ", " << gridPos.y << ")\n";
+      sf::Vector2f pos = unit->getPosition();
+      std::cout << "Unit at grid (" << pos.x << ", " << pos.y << ")\n";
     }
   }
   void createUnitFromCard(const UnitCard& card, int gridX, int girdY,

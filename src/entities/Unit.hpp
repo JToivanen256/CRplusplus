@@ -20,23 +20,26 @@ enum class Direction {
   DownLeft,
   DownRight
 };
-
+enum class State { Moving, Attacking };
 class Unit : public Entity {
  protected:
+  sf::Vector2f targetPosition_;
   float movementSpeed_;
   float visionRange_;
   std::string name_;  // Debug
-  sf::Vector2f posF_{0.f, 0.f};
+  std::vector<sf::Vector2f> path_;
+  size_t currentPathIndex_ = 0;
+  sf::Vector2f lastTargetPoint_{0.f,0.f};
 
   using CanMoveFn = std::function<bool(const sf::Vector2f& nextWorldPos)>;
 
   CanMoveFn CanMoveTo_{};
 
  public:
-  Unit(int x, int y, int gridX, int gridY, int health, int damage,
+  Unit(float x, float y, int health, int damage,
        float attackCooldown, float attackRange, float movementSpeed,
        float visionRange, Player* owner, const std::string& name)
-      : Entity(x, y, gridX, gridY, health, damage, attackCooldown, attackRange,
+      : Entity(x, y, health, damage, attackCooldown, attackRange,
                owner),
         movementSpeed_(movementSpeed),
         visionRange_(visionRange),
@@ -44,16 +47,26 @@ class Unit : public Entity {
   void move(Direction dir, float dt);
   void moveToward(const sf::Vector2f& dest, float dt);
 
-  Entity* scanNearestEnemy(const std::vector<Entity*>& all) const;
+  std::pair<Entity*, sf::Vector2f> scanNearestEnemy(const std::vector<Entity*>& all) const;
 
   void drawVision(sf::RenderWindow& window, bool visible = true) const;
 
   void syncVisual();
 
   // std::string getName() const; //Debug
-  virtual void update(float deltaTime) override {}
+  virtual void update(float deltaTime) override;
 
   const std::string& getName() const { return name_; }  // Debug again
+
+  void setPath(const std::vector<sf::Vector2f>& newPath);
+
+  void setTargetPosition(const sf::Vector2f& pos);
+
+  void setTarget(Entity* target);
+  Entity* getTarget() const;
+
+  sf::Vector2f getLastTargetPoint() const;
+    void setLastTargetPoint(const sf::Vector2f& point);
 
   // void heal(int amount); ?
 };
