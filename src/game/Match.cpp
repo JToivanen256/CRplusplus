@@ -12,34 +12,41 @@ Match::Match(Player& player1, Player& player2)
   switch (player1_.getTowerType()) {
     case TowerType::Default:  // n * tilesize (13), player2 is above on screen
       towers_.emplace_back(
-          std::make_unique<DefaultTower>(13 * 13, 43 * 13, true, &player1_));
+          std::make_unique<DefaultTower>(15 * 13, 45 * 13, true, &player1_));
       towers_.emplace_back(
-          std::make_unique<DefaultTower>(3 * 13, 41 * 13, false, &player1_));
+          std::make_unique<DefaultTower>(5 * 13, 43 * 13, false, &player1_));
       towers_.emplace_back(
-          std::make_unique<DefaultTower>(23 * 13, 41 * 13, false, &player1_));
+          std::make_unique<DefaultTower>(25 * 13, 43 * 13, false, &player1_));
       break;
   }
 
   switch (player2_.getTowerType()) {
     case TowerType::Default:
       towers_.emplace_back(
-          std::make_unique<DefaultTower>(13 * 13, 3 * 13, true, &player2_));
+          std::make_unique<DefaultTower>(15 * 13, 5 * 13, true, &player2_));
       towers_.emplace_back(
-          std::make_unique<DefaultTower>(3 * 13, 5 * 13, false, &player2_));
+          std::make_unique<DefaultTower>(5 * 13, 7 * 13, false, &player2_));
       towers_.emplace_back(
-          std::make_unique<DefaultTower>(23 * 13, 5 * 13, false, &player2_));
+          std::make_unique<DefaultTower>(25 * 13, 7 * 13, false, &player2_));
       break;
   }
   map_.generateDefaultMap();
 
   // Register towers as occupants on the grid (52 pixels = 4 tiles)
   for (const auto& tower : towers_) {
-    sf::Vector2f towerPos = tower->getSprite().getPosition();
-    auto [towerRow, towerCol] = map_.getGrid().worldToGrid(towerPos);
+    const sf::FloatRect b = tower->getSprite().getGlobalBounds();
+    sf::Vector2f topLeft{b.left, b.top};
+    sf::Vector2f bottomRight{b.left + b.width, b.top + b.height};
 
-    // A tower is 4x4 tiles, mark all occupant tiles
-    for (int r = towerRow; r < towerRow + 4; r++) {
-      for (int c = towerCol; c < towerCol + 4; c++) {
+    auto [r0, c0] = map_.getGrid().worldToGrid(topLeft);
+    auto [r1, c1] = map_.getGrid().worldToGrid(bottomRight);
+
+    // normalize/clamp so r0<=r1 and c0<=c1
+    if (r0 > r1) std::swap(r0, r1);
+    if (c0 > c1) std::swap(c0, c1);
+
+    for (int r = r0; r <= r1; ++r) {
+      for (int c = c0; c <= c1; ++c) {
         if (map_.getGrid().inBounds(r, c)) {
           map_.getGrid().addOccupant(
               r, c, reinterpret_cast<intptr_t>(tower.get()) & 0x7fffffff);

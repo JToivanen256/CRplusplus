@@ -111,7 +111,7 @@ class Entity {
     if (texturePtr_) {
       sprite_.setTexture(*texturePtr_);
       auto size = texturePtr_->getSize();
-      //sprite_.setOrigin(size.x * 0.5f, size.y * 0.5f);
+      sprite_.setOrigin(size.x * 0.5f, size.y * 0.5f);
       sprite_.setPosition(position_);
     }
   }
