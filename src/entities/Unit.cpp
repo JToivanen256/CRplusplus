@@ -198,7 +198,10 @@ void Unit::update(float deltaTime) {
 
 void Unit::setPath(const std::vector<sf::Vector2f>& newPath) {
   path_ = newPath;
-  currentPathIndex_ = 1; 
+  currentPathIndex_ = 1;
+  if (path_.size() >= 2) {
+    setTargetPosition(path_[currentPathIndex_]);
+  }
 }
 
 void Unit::setTargetPosition(const sf::Vector2f& pos) {

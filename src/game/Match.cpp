@@ -36,12 +36,11 @@ Match::Match(Player& player1, Player& player2)
   for (const auto& tower : towers_) {
     const sf::FloatRect b = tower->getSprite().getGlobalBounds();
     sf::Vector2f topLeft{b.left, b.top};
-    sf::Vector2f bottomRight{b.left + b.width, b.top + b.height};
+    sf::Vector2f bottomRight{b.left + b.width - 0.001f, b.top + b.height - 0.001f};
 
     auto [r0, c0] = map_.getGrid().worldToGrid(topLeft);
     auto [r1, c1] = map_.getGrid().worldToGrid(bottomRight);
 
-    // normalize/clamp so r0<=r1 and c0<=c1
     if (r0 > r1) std::swap(r0, r1);
     if (c0 > c1) std::swap(c0, c1);
 
@@ -76,7 +75,7 @@ void Match::update(float deltaTime) {
                                       sf::Vector2f((float)position.x,
                                                    (float)position.y));
                                   map_.getGrid().removeOccupant(
-                                      gp.second, gp.first,
+                                      gp.first, gp.second,
                                       0);  // remove occupant id unknown; grid
                                            // will handle removal if implemented
                                   return true;
