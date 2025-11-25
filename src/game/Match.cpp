@@ -220,8 +220,25 @@ void Match::createUnitFromCard(const UnitCard& card, int gridX, int gridY,
       worldX, worldY, card.getHealth(), card.getDamage(),
       card.getAttackCooldown(), card.getAttackRange(), card.getMovementSpeed(),
       card.getVisionRange(), &owner, card.getName());
-  // unit->setTexture(card.getTexture());        //Would make the most sense to
-  // store unit sprite with the Card?
+
+  {
+    std::string spritePath = "assets/sprites/" + card.getSpritePath();
+    auto tex = std::make_shared<sf::Texture>();
+    if (tex->loadFromFile(spritePath)) {
+      unit->setTextureShared(tex);
+
+      int tileSize = map_.getGrid().getTileSize();
+      float desiredPx = tileSize * 1.5f; 
+      auto ts = tex->getSize();
+      if (ts.x > 0 && ts.y > 0) {
+        unit->getSprite().setScale(desiredPx / static_cast<float>(ts.x),
+                                   desiredPx / static_cast<float>(ts.y));
+      }
+    } else {
+      std::cerr << "Failed to load texture: " << spritePath << "\n";
+    }
+  }
+
   unit->syncVisual();
   addUnit(std::move(unit));
 

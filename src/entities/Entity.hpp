@@ -27,7 +27,7 @@ class Entity {
   float attackRange_;
   bool isAlive_ = true;
   sf::Sprite sprite_;
-  sf::Texture texture_;
+  std::shared_ptr<sf::Texture> texturePtr_;
   Player* owner_;
   Entity* target_ = nullptr;
   bool isAttacking_ = false;
@@ -60,7 +60,7 @@ class Entity {
   bool canAttack() const { return currentCooldown_ <= 0.0f; };
 
   Player* getOwner() const { return owner_; }
-  
+
   virtual void attack(Entity& target) {
     target.takeDamage(damage_);
     currentCooldown_ = attackCooldown_;
@@ -106,12 +106,14 @@ class Entity {
     window.draw(healthBar);
   }
 
-  void setTexture(const sf::Texture& text) {
-    texture_ = text;
-    sprite_.setTexture(texture_);
-    auto size = texture_.getSize();
-    sprite_.setOrigin(size.x * 0.5f, size.y * 0.5f);
-    sprite_.setPosition((float)position_.x, (float)position_.y);
+  void setTextureShared(const std::shared_ptr<sf::Texture>& tex) {
+    texturePtr_ = tex;
+    if (texturePtr_) {
+      sprite_.setTexture(*texturePtr_);
+      auto size = texturePtr_->getSize();
+      //sprite_.setOrigin(size.x * 0.5f, size.y * 0.5f);
+      sprite_.setPosition(position_);
+    }
   }
 
   auto getSpriteBounds() { return sprite_.getGlobalBounds(); }

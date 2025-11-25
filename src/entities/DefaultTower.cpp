@@ -12,17 +12,20 @@ namespace {
 
 // Grid position shouldn't matter and probably should be removed from entity.
 // Just calculate from pixel position when needed.
-DefaultTower::DefaultTower(int x, int y, bool isKingTower, Player* owner)
+DefaultTower::DefaultTower(float x, float y, bool isKingTower, Player* owner)
   : Tower(x, y, HEALTH, DAMAGE, ATTACK_COOLDOWN, ATTACK_RANGE, SIZE_PIXELS, isKingTower, owner)
 {
-  if (!texture_.loadFromFile("assets/sprites/tower.png")) {
+  auto tex = std::make_shared<sf::Texture>();
+  if (!tex->loadFromFile("assets/sprites/tower.png")) {
     throw std::runtime_error("Failed to load tower texture!");
   }
 
-  sprite_.setTexture(texture_);
+  setTextureShared(tex);
+
+  sf::Vector2u texSize = tex->getSize();
+
   sprite_.setPosition(static_cast<float>(x), static_cast<float>(y));
 
-  sf::Vector2u texSize = texture_.getSize();
   float scaleX = static_cast<float>(SIZE_PIXELS) / static_cast<float>(texSize.x);
   float scaleY = static_cast<float>(SIZE_PIXELS) / static_cast<float>(texSize.y);
   sprite_.setScale(scaleX, scaleY);

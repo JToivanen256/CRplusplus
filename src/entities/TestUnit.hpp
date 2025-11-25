@@ -10,13 +10,6 @@ class TestUnit : public Unit {
            float visionRange, Player* owner, const std::string& name)
       : Unit(x, y, health, damage, attackCooldown, attackRange, movementSpeed,
              visionRange, owner, name) {
-    sf::Image img;
-    img.create(20, 20, sf::Color::Black);
-
-    sf::Texture tex;
-    tex.loadFromImage(img);
-    setTexture(tex);
-    syncVisual();
   }
 };
 
