@@ -94,7 +94,7 @@ void Match::update(float deltaTime) {
       auto target = unit->scanNearestEnemy(entities);
       if (target.first) {
         const float replanThreshold = 4.0f;
-        // I'm going insane
+        // I'm going insane :D
         if (unit->getTarget() != target.first) {
           unit->setTarget(target.first);
           unit->setLastTargetPoint(target.second);
