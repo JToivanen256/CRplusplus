@@ -43,6 +43,33 @@ void CardRenderer::renderCard(const Card& card, sf::RenderWindow& window,
     window.draw(name);
   };
 
+  auto drawCostBadge = [&](int cost) {
+    float cardW = scale.x * 64.f;
+    float cardH = scale.y * 64.f;
+    float badgeRadius = std::max(10.f, cardW * 0.18f);
+
+    //Creates the circle around the elixir cost
+    sf::CircleShape badge(badgeRadius);
+    badge.setFillColor(sf::Color::White);
+    badge.setOutlineColor(sf::Color::Black);
+    badge.setOutlineThickness(1.f);
+
+    badge.setPosition(position.x, position.y + 64.f);
+    window.draw(badge);
+
+    //Creates the cost text itself
+    unsigned int charSize = static_cast<unsigned int>(std::max(10.f, badgeRadius * 0.9f));
+    sf::Text costText(std::to_string(cost), font, charSize);
+    costText.setFillColor(sf::Color::Black);
+
+    //Centers the cost on top of the circle
+    sf::FloatRect tb = costText.getLocalBounds();
+    float textX = position.x + badgeRadius - (tb.width / 2.0f) - tb.left;
+    float textY = position.y + 64.f + badgeRadius - (tb.height / 2.0f) - tb.top;
+    costText.setPosition(textX, textY);
+    window.draw(costText);
+  };
+
   // Try to load and render the sprite
   const std::string& spritePath = card.getSpritePath();
   if (!this->loadTexture(spritePath)) {
@@ -56,6 +83,7 @@ void CardRenderer::renderCard(const Card& card, sf::RenderWindow& window,
     sprite.setPosition(position);
     sprite.setScale(scale);
     window.draw(sprite);
+    drawCostBadge(card.getCost());
   } else {
     drawFallback();
   }
