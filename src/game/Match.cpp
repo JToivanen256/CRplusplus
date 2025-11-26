@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <iostream>
+#include <cmath>
 
 #include "../entities/DefaultTower.hpp"
 #include "../entities/TestUnit.hpp"
@@ -32,25 +33,40 @@ Match::Match(Player& player1, Player& player2)
   }
   map_.generateDefaultMap();
 
-  // Register towers as occupants on the grid (52 pixels = 4 tiles)
-  for (const auto& tower : towers_) {
-    const sf::FloatRect b = tower->getSprite().getGlobalBounds();
-    sf::Vector2f topLeft{b.left, b.top};
-    sf::Vector2f bottomRight{b.left + b.width - 0.001f, b.top + b.height - 0.001f};
+  {
+    // Register towers as occupants on the grid
+    int tileSize = map_.getGrid().getTileSize();
+    int maxRows = map_.getGrid().getRows();
+    int maxCols = map_.getGrid().getColumns();
 
-    auto [r0, c0] = map_.getGrid().worldToGrid(topLeft);
-    auto [r1, c1] = map_.getGrid().worldToGrid(bottomRight);
+    for (const auto& tower : towers_) {
+      const sf::FloatRect b = tower->getSprite().getGlobalBounds();
+      float left = b.left;
+      float top = b.top;
+      float right = b.left + b.width - 0.001f;
+      float bottom = b.top + b.height - 0.001f;
 
-    if (r0 > r1) std::swap(r0, r1);
-    if (c0 > c1) std::swap(c0, c1);
+      // convert world pixels -> grid indices
+      int r0 = map_.getGrid().worldToGrid(sf::Vector2f(left, top)).first;
+      int c0 = map_.getGrid().worldToGrid(sf::Vector2f(left, top)).second;
+      int r1 = map_.getGrid().worldToGrid(sf::Vector2f(right, bottom)).first;
+      int c1 = map_.getGrid().worldToGrid(sf::Vector2f(right, bottom)).second;
 
-    for (int r = r0; r <= r1; ++r) {
-      for (int c = c0; c <= c1; ++c) {
-        if (map_.getGrid().inBounds(r, c)) {
-          map_.getGrid().addOccupant(
-              r, c, reinterpret_cast<intptr_t>(tower.get()) & 0x7fffffff);
+      // clamp to grid
+      r0 = std::max(0, std::min(r0, maxRows - 1));
+      r1 = std::max(0, std::min(r1, maxRows - 1));
+      c0 = std::max(0, std::min(c0, maxCols - 1));
+      c1 = std::max(0, std::min(c1, maxCols - 1));
+
+      // Register occupants
+      for (int r = r0; r <= r1; ++r) {
+        for (int c = c0; c <= c1; ++c) {
+          map_.getGrid().addOccupant(r, c,
+              reinterpret_cast<intptr_t>(tower.get()) & 0x7fffffff);
         }
       }
+
+      std::cout << "tower tiles: (" << r0 << "," << c0 << ") -> ("<< r1 << "," << c1 << ")" << std::endl;
     }
   }
 
@@ -89,12 +105,13 @@ void Match::update(float deltaTime) {
 
   std::vector<Entity*> entities = allEntities();
 
+  // Update units
   for (auto& unit : units_) {
     if (!unit->isAttacking()) {
       auto target = unit->scanNearestEnemy(entities);
+      // If found a target, set it and plan path
       if (target.first) {
         const float replanThreshold = 4.0f;
-        // I'm going insane
         if (unit->getTarget() != target.first) {
           unit->setTarget(target.first);
           unit->setLastTargetPoint(target.second);
@@ -102,6 +119,7 @@ void Match::update(float deltaTime) {
           auto path = map_.findPath(unitPos, target.second);
           if (path.size() >= 2) unit->setPath(path);
         } else {
+          // Check if target has moved significantly to replan path
           sf::Vector2f last = unit->getLastTargetPoint();
           float dx = target.second.x - last.x;
           float dy = target.second.y - last.y;
@@ -112,21 +130,27 @@ void Match::update(float deltaTime) {
             if (path.size() >= 2) unit->setPath(path);
           }
         }
-      } else {
+      } else { // No target found, go for enemy king tower
         auto enemyKT = (unit->getOwner() == &player1_) ? getKingTowers().second : getKingTowers().first;
         if (enemyKT && unit->getTarget() != enemyKT){
           std::cout << "No target found, going for enemy king tower\n";
           unit->setTarget(enemyKT);
           auto TargetPos = enemyKT->getPosition();
+          // Position just outside tower sprite to avoid occupied tiles
+          if (unit->getOwner() == &player1_) {
+            TargetPos.y += enemyKT->getSpriteBounds().height / 2 + 1; 
+          } else {
+            TargetPos.y -= enemyKT->getSpriteBounds().height / 2 + 1;
+          }
           auto unitPos = unit->getPosition();
           auto path = map_.findPath(unitPos, TargetPos);
           if (path.size() >= 2) {
             unit->setPath(path);
+            unit->setLastTargetPoint(TargetPos);
           }
         }
       }
     }   
-      
     unit->update(deltaTime);
   }
 }

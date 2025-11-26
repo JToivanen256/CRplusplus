@@ -1,6 +1,7 @@
 #include "Map.hpp"
 #include <cmath>
 #include <queue>
+#include <iostream>
 
 
 Map::Map(int width, int height) : grid_(width, height) {}
@@ -11,6 +12,7 @@ const Grid& Map::getGrid() const { return grid_; }
 
 void Map::generateDefaultMap() { grid_.defaultGridMap(); }
 
+// node structure for A* pathfinding
 struct node {
   int row;
   int col;
@@ -20,30 +22,36 @@ struct node {
   node* parent = nullptr;
 };
 
+// A* pathfinding 
 std::vector<sf::Vector2f> Map::findPath(sf::Vector2f& from, sf::Vector2f& to) {
   auto [startRow, startCol] = grid_.worldToGrid(from);
   auto [goalRow, goalCol] = grid_.worldToGrid(to);
+  std::cout << "Finding path from (" << startRow << ", " << startCol << ") to ("<< goalRow << ", " << goalCol << ")" << std::endl;
 
   const int rows = grid_.getRows();
   const int cols = grid_.getColumns();
 
   if (startRow < 0 || startCol < 0 || goalRow < 0 || goalCol < 0 ||
       startRow >= rows || startCol >= cols || goalRow >= rows || goalCol >= cols) {
+    std::cout << "Start or goal out of bounds!\n";
     return {};
   }
   if (startRow == goalRow && startCol == goalCol) {
+    std::cout << "Start is the same as goal!\n";
     return { grid_.gridToWorld(startRow, startCol) };
   }
 
+  // Calvculate heuristic (octile distance)
   auto heuristic = [&](int r, int c) {
     int dx = std::abs(r - goalRow);
     int dy = std::abs(c - goalCol);
     const float D = 1.0f;
     const float D2 = 1.41421356237f;
 
-    return (D * (dx + dy) + (D2 - 2.0f * D) * std::min(dx, dy)) * 1.001f;
+    return (D * (dx + dy) + (D2 - 2.0f * D) * std::min(dx, dy));
   };
 
+  // Initialize nodes
   std::vector<std::vector<node>> nodes(rows, std::vector<node>(cols));
   for (int r = 0; r < rows; ++r) {
     for (int c = 0; c < cols; ++c) {
@@ -55,6 +63,7 @@ std::vector<sf::Vector2f> Map::findPath(sf::Vector2f& from, sf::Vector2f& to) {
     }
   }
 
+  // Comparator for priority queue
   auto cmp = [&](node* a, node* b) {
     float fA = a->fCost();
     float fB = b->fCost();
@@ -65,15 +74,19 @@ std::vector<sf::Vector2f> Map::findPath(sf::Vector2f& from, sf::Vector2f& to) {
     return fA > fB; 
   };
 
+  // Priority queue for open list
   std::priority_queue<node*, std::vector<node*>, decltype(cmp)> openList(cmp);
 
+  // Start from the starting node
   node* startNode = &nodes[startRow][startCol];
   startNode->gCost = 0.f;
   openList.push(startNode);
 
+  // Closed set to track visited nodes
   std::vector<std::vector<char>> closedSet(rows, std::vector<char>(cols, 0));
   node* goalNode = nullptr;
 
+  // A* main loop
   while (!openList.empty()) {
     node* current = openList.top();
     openList.pop();
@@ -86,6 +99,7 @@ std::vector<sf::Vector2f> Map::findPath(sf::Vector2f& from, sf::Vector2f& to) {
       break;
     }
 
+    // Explore neighbors
     for (auto nb : grid_.getNeighbors(current->row, current->col, true)) {
       int nr = nb.first;
       int nc = nb.second;
@@ -94,12 +108,17 @@ std::vector<sf::Vector2f> Map::findPath(sf::Vector2f& from, sf::Vector2f& to) {
       if (!grid_.at(nr, nc).walkable) continue;
 
       if (closedSet[nr][nc]) continue; 
-      if (grid_.isOccupied(nr, nc) && !(nr == goalRow && nc == goalCol)) continue;
+      if (grid_.isOccupied(nr, nc) && !(nr == goalRow && nc == goalCol)) {
+        std::cout << "Skipping occupied tile at (" << nr << ", " << nc << ")\n";
+        continue;
+      }
 
+      // Determine movement cost
       int dr = std::abs(nr - current->row);
       int dc = std::abs(nc - current->col);
       const float stepCost = (dr == 1 && dc == 1) ? 1.41421356237f : 1.0f;
 
+      // Tentative g cost
       float tentativeG = current->gCost + stepCost;
       node* neighbour = &nodes[nr][nc];
 
@@ -112,8 +131,12 @@ std::vector<sf::Vector2f> Map::findPath(sf::Vector2f& from, sf::Vector2f& to) {
   }
 
   std::vector<sf::Vector2f> path;
-  if (!goalNode) return path;
+  if (!goalNode) {
+    std::cout << "No path found!\n";
+    return path;
+  } 
 
+  // Reconstruct path
   for (node* cur = goalNode; cur != nullptr; cur = cur->parent)
     path.push_back(grid_.gridToWorld(cur->row, cur->col));
   std::reverse(path.begin(), path.end());
