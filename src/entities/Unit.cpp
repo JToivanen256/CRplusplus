@@ -1,6 +1,7 @@
 #include "Unit.hpp"
 
 #include <cmath>
+#include <iostream>
 
 // Some helper functions here
 
@@ -63,30 +64,8 @@ void Unit::moveToward(const sf::Vector2f& dest, float dt) {
     position_ = next;
   }
 }
-// finds the nearest enemy, building or unit to attack
-/*Entity* Unit::scanNearestEnemy(const std::vector<Entity*>& all) const {
-  const float r2 = visionRange_ * visionRange_;
-  const sf::Vector2f me = position_;
 
-  Entity* closest = nullptr;
-  float closest_dist = std::numeric_limits<float>::max();
-
-  for (Entity* e : all) {
-    if (!e || e == this || e->isDead() || e->getOwner() == this->owner_)
-      continue;  // Can't have the unit try to attack itself or friendly units
-                 // or buildings
-    sf::Vector2f ep{static_cast<float>(e->getPosition().x),
-                    static_cast<float>(e->getPosition().y)};
-    float dist = dist2(me, ep);
-    if (dist <= r2) {
-      if (dist < closest_dist) {
-        closest_dist = dist;
-        closest = e;
-      }
-    }
-  }
-  return closest;
-}*/
+// Find the point on rectangle sprite (r) that is closes to the unit (p)
 static inline sf::Vector2f clampPointToRect(const sf::FloatRect& r, const sf::Vector2f& p) {
   sf::Vector2f out;
   out.x = std::max(r.left, std::min(r.left + r.width, p.x));
@@ -94,6 +73,7 @@ static inline sf::Vector2f clampPointToRect(const sf::FloatRect& r, const sf::Ve
   return out;
 }
 
+// Scans the given list of entities and returns the closest enemy and the point of collision with the vision range
 std::pair<Entity*, sf::Vector2f> Unit::scanNearestEnemy(const std::vector<Entity*>& all) const {
   const float vision = visionRange_;
   const float r2 = vision * vision;
@@ -109,6 +89,7 @@ std::pair<Entity*, sf::Vector2f> Unit::scanNearestEnemy(const std::vector<Entity
 
     sf::FloatRect b = e->getSpriteBounds();
 
+    // find closest point on target rectangle to the unit
     sf::Vector2f cp = clampPointToRect(b, me);
 
     float d2 = dist2(me, cp);
@@ -150,16 +131,16 @@ void Unit::syncVisual() {
 }*/
 
 void Unit::update(float deltaTime) {
-  //std::cout << "Going towards: " << targetPosition_.x << ", " << targetPosition_.y << std::endl;
   if (currentCooldown_ > 0.f) currentCooldown_ = std::max(0.f, currentCooldown_ - deltaTime);
 
-  // valid target?
+  // has target?
   if (target_ && !target_->isDead()) {
     sf::Vector2f myPos = position_;
     sf::FloatRect tb = target_->getSpriteBounds();
     sf::Vector2f contact = clampPointToRect(tb, myPos); // nearest point on target
     float d2 = dist2(myPos, contact);
 
+    // if enemy in *ATTACK* range -> attack
     if (d2 <= attackRange_ * attackRange_) {
       // In attack range -> do NOT move, perform attack logic here
       isAttacking_ = true;
@@ -171,7 +152,7 @@ void Unit::update(float deltaTime) {
           isAttacking_ = false;
         }
       }
-    } else {
+    } else { // else move toward enemy, by iterating given path
       isAttacking_ = false;
       if (path_.size() >= 2 && currentPathIndex_ < path_.size()) {
         setTargetPosition(path_[currentPathIndex_]);
@@ -179,9 +160,10 @@ void Unit::update(float deltaTime) {
           currentPathIndex_++;
         }
       }
+      std::cout << "Moving toward target position: (" << targetPosition_.x << ", " << targetPosition_.y << ")\n";
       moveToward(targetPosition_, deltaTime);
     }
-  } else {
+  } else { // no target, should not happen during the game due to auto-targeting on king tower
     isAttacking_ = false;
     if (path_.size() >= 2 && currentPathIndex_ < path_.size()) {
       setTargetPosition(path_[currentPathIndex_]);
@@ -189,10 +171,9 @@ void Unit::update(float deltaTime) {
         currentPathIndex_++;
       }
     }
-
     moveToward(targetPosition_, deltaTime);
+    
   }
-
   syncVisual();
 }
 
@@ -201,6 +182,8 @@ void Unit::setPath(const std::vector<sf::Vector2f>& newPath) {
   currentPathIndex_ = 1;
   if (path_.size() >= 2) {
     setTargetPosition(path_[currentPathIndex_]);
+  } else {
+    setTargetPosition(position_); // no movement, should not happen
   }
 }
 

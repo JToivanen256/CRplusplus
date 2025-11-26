@@ -106,6 +106,7 @@ class Entity {
     window.draw(healthBar);
   }
 
+  // Uses same texture as cards
   void setTextureShared(const std::shared_ptr<sf::Texture>& tex) {
     texturePtr_ = tex;
     if (texturePtr_) {
