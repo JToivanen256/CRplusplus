@@ -9,6 +9,7 @@
 #include "ui/MatchState.hpp"
 #include "ui/MenuState.hpp"
 #include "ui/EndState.hpp"
+#include "ui/PauseState.hpp"
 
 int main() {
   sf::RenderWindow window(sf::VideoMode(390, 780), "CR++");
@@ -37,6 +38,8 @@ int main() {
     // If in MenuState and ongoingMatch_ is true, switch to MatchState
     if (MenuState* menu = dynamic_cast<MenuState*>(currentState.get())) {
       if (menu->ongoingMatch_) {
+        player1.reset();
+        player2.reset();
         currentState = std::make_unique<MatchState>(player1, player2);
       }
     }
@@ -52,6 +55,24 @@ int main() {
     // If in EndState and returnToMenu_ is true, switch to MenuState
     if (EndState* end = dynamic_cast<EndState*>(currentState.get())) {
       if (end->returnToMenu_) {
+        currentState = std::make_unique<MenuState>(window);
+      }
+    }
+
+    // If in MatchState and pause requested, switch to PauseState
+    if (MatchState* match = dynamic_cast<MatchState*>(currentState.get())) { 
+      if (sf::Keyboard::isKeyPressed(sf::Keyboard::P)) {
+        // Save current MatchState into PauseState to resume later
+        auto prev = std::move(currentState);
+        currentState = std::make_unique<PauseState>(window, std::move(prev));
+      }
+    }
+
+    // If in PauseState and resumeGame_ is true, switch back to MatchState
+    if (PauseState* pause = dynamic_cast<PauseState*>(currentState.get())) {
+      if (pause->resumeGame_) {
+        currentState = pause->getPreviousState();
+      } else if (pause->returnToMenu_) {
         currentState = std::make_unique<MenuState>(window);
       }
     }

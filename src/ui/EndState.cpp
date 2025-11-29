@@ -32,7 +32,11 @@ void EndState::handleInput(sf::RenderWindow& window, sf::Event event) {
   for (size_t i = 0; i < endMenuOptions_.size(); ++i) {
     if (endMenuOptions_[i].getGlobalBounds().contains(static_cast<sf::Vector2f>(mousePos))) {
       selectedOptionIndex_ = static_cast<int>(i);
-      endMenuOptions_[i].setFillColor(sf::Color::Green);
+      if (selectedOptionIndex_ == 0) {
+        endMenuOptions_[i].setFillColor(sf::Color::Green); 
+      } else {
+        endMenuOptions_[i].setFillColor(sf::Color::Red);
+      }
     } else {
       endMenuOptions_[i].setFillColor(sf::Color::White);
     }
