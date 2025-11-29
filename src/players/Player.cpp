@@ -11,7 +11,7 @@ void Player::update(float deltaTime) {
     if (elixir_ < 10) {
       elixir_++;
     }
-    elixirTimer_ = 0.0f;
+    elixirTimer_ -= 1.0f;
   }
 }
 
@@ -49,3 +49,10 @@ const TowerType& Player::getTowerType() const { return towerType_; }
 void Player::setColor(const sf::Color& color) { color_ = color; }
 
 const sf::Color& Player::getColor() const { return color_; }
+
+void Player::reset() {
+  elixir_ = 0;
+  elixirTimer_ = 0.0f;
+  deck_.shuffle();
+  hand_ = Hand(deck_.initializedHand());
+}

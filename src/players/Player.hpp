@@ -20,20 +20,21 @@ class Player {
   Hand hand_;
   float elixirRegenRate_ = 1.0f;
   float elixirTimer_ = 0.0f;
-  TowerType towerType_ = TowerType::Default;
+  TowerType towerType_ = TowerType::Default; // In case we have different tower types later
   sf::Color color_;  // Color representing the player in-game
 
  public:
+  void reset(); // Resets player state for a new match
   // Regen elixir over time
   void update(float deltaTime);
 
   // Actions
-  void drawCard();
+  //void drawCard();
   bool playCard(const std::shared_ptr<Card>& card);
 
   // Deck and Hand
-  void shuffleDeck();
-  void initializeHand();
+  //void shuffleDeck();
+  //void initializeHand();
   void updateHand();
 
   // Getters
