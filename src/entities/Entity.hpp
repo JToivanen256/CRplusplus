@@ -29,7 +29,7 @@ class Entity {
   sf::Sprite sprite_;
   std::shared_ptr<sf::Texture> texturePtr_;
   Player* owner_;
-  Entity* target_ = nullptr;
+  Entity* target_ = nullptr; // Possibly dangerous dangling pointer
   bool isAttacking_ = false;
 
  public:

@@ -1,0 +1,79 @@
+==16536== Memcheck, a memory error detector
+==16536== Copyright (C) 2002-2017, and GNU GPL'd, by Julian Seward et al.
+==16536== Using Valgrind-3.15.0 and LibVEX; rerun with -h for copyright info
+==16536== Command: ./build/strategy-game-1
+==16536== Parent PID: 2676
+==16536== 
+==16536== 
+==16536== HEAP SUMMARY:
+==16536==     in use at exit: 274,709 bytes in 3,058 blocks
+==16536==   total heap usage: 211,039 allocs, 207,981 frees, 577,603,931 bytes allocated
+==16536== 
+==16536== 56 bytes in 1 blocks are indirectly lost in loss record 2,076 of 2,446
+==16536==    at 0x483DD99: calloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
+==16536==    by 0x69A6905: ???
+==16536==    by 0x64C279B: ???
+==16536==    by 0x64ACDC5: ???
+==16536==    by 0x64ACFA4: ???
+==16536==    by 0x645A5CF: ???
+==16536==    by 0x645D10C: ???
+==16536==    by 0x6457F2C: ???
+==16536==    by 0x63FC5C7: ???
+==16536==    by 0x643DE7D: ???
+==16536==    by 0x643ABDE: ???
+==16536==    by 0x63CDCE5: ???
+==16536== 
+==16536== 64 bytes in 1 blocks are definitely lost in loss record 2,149 of 2,446
+==16536==    at 0x483BE63: operator new(unsigned long) (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
+==16536==    by 0x663F0CD: ???
+==16536==    by 0x5DD0063: ???
+==16536==    by 0x4011B99: call_init.part.0 (dl-init.c:72)
+==16536==    by 0x4011CA0: call_init (dl-init.c:30)
+==16536==    by 0x4011CA0: _dl_init (dl-init.c:119)
+==16536==    by 0x4D90BA4: _dl_catch_exception (dl-error-skeleton.c:182)
+==16536==    by 0x401643C: dl_open_worker (dl-open.c:758)
+==16536==    by 0x4D90B47: _dl_catch_exception (dl-error-skeleton.c:208)
+==16536==    by 0x4015609: _dl_open (dl-open.c:837)
+==16536==    by 0x527234B: dlopen_doit (dlopen.c:66)
+==16536==    by 0x4D90B47: _dl_catch_exception (dl-error-skeleton.c:208)
+==16536==    by 0x4D90C12: _dl_catch_error (dl-error-skeleton.c:227)
+==16536== 
+==16536== 112 (56 direct, 56 indirect) bytes in 1 blocks are definitely lost in loss record 2,404 of 2,446
+==16536==    at 0x483DD99: calloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
+==16536==    by 0x69A68EE: ???
+==16536==    by 0x64C279B: ???
+==16536==    by 0x64ACDC5: ???
+==16536==    by 0x64ACFA4: ???
+==16536==    by 0x645A5CF: ???
+==16536==    by 0x645D10C: ???
+==16536==    by 0x6457F2C: ???
+==16536==    by 0x63FC5C7: ???
+==16536==    by 0x643DE7D: ???
+==16536==    by 0x643ABDE: ???
+==16536==    by 0x63CDCE5: ???
+==16536== 
+==16536== 5,355 bytes in 255 blocks are definitely lost in loss record 2,440 of 2,446
+==16536==    at 0x483B7F3: malloc (in /usr/lib/x86_64-linux-gnu/valgrind/vgpreload_memcheck-amd64-linux.so)
+==16536==    by 0x4CCF38E: strdup (strdup.c:42)
+==16536==    by 0x59586F6: ???
+==16536==    by 0x59584A4: ???
+==16536==    by 0x5145436: ??? (in /usr/lib/x86_64-linux-gnu/libGLdispatch.so.0.0.0)
+==16536==    by 0x5145E1C: __glDispatchMakeCurrent (in /usr/lib/x86_64-linux-gnu/libGLdispatch.so.0.0.0)
+==16536==    by 0x51C1419: ??? (in /usr/lib/x86_64-linux-gnu/libGLX.so.0.0.0)
+==16536==    by 0x51C2C57: ??? (in /usr/lib/x86_64-linux-gnu/libGLX.so.0.0.0)
+==16536==    by 0x48C4813: ??? (in /usr/lib/x86_64-linux-gnu/libsfml-window.so.2.5.1)
+==16536==    by 0x48B6076: ??? (in /usr/lib/x86_64-linux-gnu/libsfml-window.so.2.5.1)
+==16536==    by 0x48B65AF: ??? (in /usr/lib/x86_64-linux-gnu/libsfml-window.so.2.5.1)
+==16536==    by 0x48B740B: ??? (in /usr/lib/x86_64-linux-gnu/libsfml-window.so.2.5.1)
+==16536== 
+==16536== LEAK SUMMARY:
+==16536==    definitely lost: 5,475 bytes in 257 blocks
+==16536==    indirectly lost: 56 bytes in 1 blocks
+==16536==      possibly lost: 0 bytes in 0 blocks
+==16536==    still reachable: 269,178 bytes in 2,800 blocks
+==16536==         suppressed: 0 bytes in 0 blocks
+==16536== Reachable blocks (those to which a pointer was found) are not shown.
+==16536== To see them, rerun with: --leak-check=full --show-leak-kinds=all
+==16536== 
+==16536== For lists of detected and suppressed errors, rerun with: -s
+==16536== ERROR SUMMARY: 3 errors from 3 contexts (suppressed: 2 from 2)
