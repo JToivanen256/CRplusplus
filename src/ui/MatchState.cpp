@@ -7,8 +7,8 @@
 #include "../players/UnitCard.hpp"
 #include "CardRenderer.hpp"
 
-MatchState::MatchState(Player& p1, Player& p2)
-    : player1_(p1), player2_(p2), match_(p1, p2) {
+MatchState::MatchState(Player& p1, Player& p2, AIDifficulty difficulty)
+    : player1_(p1), player2_(p2), match_(p1, p2, difficulty) {
   if (!font_.loadFromFile("assets/fonts/MomoTrustDisplay-Regular.ttf")) {
     std::cerr << "Failed to load font!" << std::endl;
   }
@@ -65,7 +65,6 @@ void MatchState::render(sf::RenderWindow& window) {
 
     cardRenderer_.renderCard(*card, window, {x, yPos}, {scale, scale}, font_);
   }
-
 
   // Show remaining time in the match by getting the info from Match
   float remainingTime = match_.getRemainingTime();
@@ -133,7 +132,7 @@ void MatchState::handleGridClick(sf::Vector2f mousePos) {
   }
 
   // Make a copy of the card before removing it
-  //Card selectedCard = cards[selectedCardIndex_];
+  // Card selectedCard = cards[selectedCardIndex_];
 
   auto cardPtr = cards[selectedCardIndex_];
   // Play card if elixir is sufficient
@@ -168,12 +167,13 @@ bool MatchState::isValidSpawnPosition(int row, int col) const {
   return true;
 }
 
-void MatchState::spawnUnit(int row, int col, const std::shared_ptr<Card>& cardPtr) {
+void MatchState::spawnUnit(int row, int col,
+                           const std::shared_ptr<Card>& cardPtr) {
   if (!cardPtr) {
     std::cerr << "Invalid card pointer!" << std::endl;
     return;
   }
-  //std::cout << card.isSpell() << std::endl;
+  // std::cout << card.isSpell() << std::endl;
   if (auto ucard = std::dynamic_pointer_cast<UnitCard>(cardPtr)) {
     match_.createUnitFromCard(*ucard, col, row, player1_);
 
@@ -191,7 +191,7 @@ void MatchState::spawnUnit(int row, int col, const std::shared_ptr<Card>& cardPt
   // Register occupancy with a simple id
   int unitId =
       static_cast<int>(row * 100 + col);  // Simple unique id based on position
-  //match_.getMap().getGrid().addOccupant(row, col, unitId);
+  // match_.getMap().getGrid().addOccupant(row, col, unitId);
 
   // Debug prints
   std::cout << "Spawned unit for card '" << cardPtr->getName() << "' at grid ("

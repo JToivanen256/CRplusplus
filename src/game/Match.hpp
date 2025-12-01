@@ -11,6 +11,7 @@
 #include "../entities/Spell.hpp"
 #include "../entities/Tower.hpp"
 #include "../entities/Unit.hpp"
+#include "../players/AI.hpp"
 #include "../players/Player.hpp"
 #include "../players/UnitCard.hpp"
 #include "Map.hpp"
@@ -19,6 +20,7 @@ class Match {
  private:
   Player& player1_;
   Player& player2_;
+  AIDifficulty aiDifficulty_;
   Map map_;
   Player* winner_ = nullptr;
   std::vector<std::unique_ptr<Unit>> units_;
@@ -36,7 +38,7 @@ class Match {
   std::vector<Entity*> allEntities();
 
  public:
-  Match(Player& player1, Player& player2);
+  Match(Player& player1, Player& player2, AIDifficulty aiDifficulty);
 
   void update(float deltaTime);
   void render(sf::RenderWindow& window);

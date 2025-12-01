@@ -32,7 +32,7 @@ class MatchState : public GameState {
   void spawnUnit(int row, int col, const std::shared_ptr<Card>& cardPtr);
 
  public:
-  MatchState(Player& p1, Player& p2);
+  MatchState(Player& p1, Player& p2, AIDifficulty difficulty);
   virtual void update(float deltaTime) override;
   virtual void handleInput(sf::RenderWindow& window, sf::Event event) override;
   virtual void render(sf::RenderWindow& window) override;

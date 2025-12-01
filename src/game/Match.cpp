@@ -1,14 +1,17 @@
 #include "Match.hpp"
 
+#include <cmath>
 #include <cstdint>
 #include <iostream>
-#include <cmath>
 
 #include "../entities/DefaultTower.hpp"
 #include "../entities/TestUnit.hpp"
 
-Match::Match(Player& player1, Player& player2)
-    : player1_(player1), player2_(player2), map_(30, 50) {
+Match::Match(Player& player1, Player& player2, AIDifficulty aiDifficulty)
+    : player1_(player1),
+      player2_(player2),
+      aiDifficulty_(aiDifficulty),
+      map_(30, 50) {
   // This is not nice but it will do for now
   switch (player1_.getTowerType()) {
     case TowerType::Default:  // n * tilesize (13), player2 is above on screen
@@ -61,12 +64,13 @@ Match::Match(Player& player1, Player& player2)
       // Register occupants
       for (int r = r0; r <= r1; ++r) {
         for (int c = c0; c <= c1; ++c) {
-          map_.getGrid().addOccupant(r, c,
-              reinterpret_cast<intptr_t>(tower.get()) & 0x7fffffff);
+          map_.getGrid().addOccupant(
+              r, c, reinterpret_cast<intptr_t>(tower.get()) & 0x7fffffff);
         }
       }
 
-      std::cout << "tower tiles: (" << r0 << "," << c0 << ") -> ("<< r1 << "," << c1 << ")" << std::endl;
+      std::cout << "tower tiles: (" << r0 << "," << c0 << ") -> (" << r1 << ","
+                << c1 << ")" << std::endl;
     }
   }
 
@@ -82,23 +86,23 @@ void Match::update(float deltaTime) {
   player2_.update(deltaTime);
 
   // Remove dead units and clear their occupants
-  units_.erase(std::remove_if(units_.begin(), units_.end(),
-                              [this](const std::unique_ptr<Unit>& u) {
-                                if (!u) return true;
-                                if (u->isDead()) {
-                                  auto position = u->getPosition();
-                                  auto gp = map_.getGrid().worldToGrid(
-                                      sf::Vector2f((float)position.x,
-                                                   (float)position.y));
-                                  map_.getGrid().removeOccupant(
-                                      gp.first, gp.second,
-                                      0);  // remove occupant id unknown; grid
-                                           // will handle removal if implemented
-                                  return true;
-                                }
-                                return false;
-                              }),
-               units_.end());
+  units_.erase(
+      std::remove_if(units_.begin(), units_.end(),
+                     [this](const std::unique_ptr<Unit>& u) {
+                       if (!u) return true;
+                       if (u->isDead()) {
+                         auto position = u->getPosition();
+                         auto gp = map_.getGrid().worldToGrid(sf::Vector2f(
+                             (float)position.x, (float)position.y));
+                         map_.getGrid().removeOccupant(
+                             gp.first, gp.second,
+                             0);  // remove occupant id unknown; grid
+                                  // will handle removal if implemented
+                         return true;
+                       }
+                       return false;
+                     }),
+      units_.end());
 
   checkForWinner();
   matchTime_ += deltaTime;
@@ -123,22 +127,23 @@ void Match::update(float deltaTime) {
           sf::Vector2f last = unit->getLastTargetPoint();
           float dx = target.second.x - last.x;
           float dy = target.second.y - last.y;
-          if ((dx*dx + dy*dy) > (replanThreshold * replanThreshold)) {
+          if ((dx * dx + dy * dy) > (replanThreshold * replanThreshold)) {
             unit->setLastTargetPoint(target.second);
             auto unitPos = unit->getPosition();
             auto path = map_.findPath(unitPos, target.second);
             if (path.size() >= 2) unit->setPath(path);
           }
         }
-      } else { // No target found, go for enemy king tower
-        auto enemyKT = (unit->getOwner() == &player1_) ? getKingTowers().second : getKingTowers().first;
-        if (enemyKT && unit->getTarget() != enemyKT){
+      } else {  // No target found, go for enemy king tower
+        auto enemyKT = (unit->getOwner() == &player1_) ? getKingTowers().second
+                                                       : getKingTowers().first;
+        if (enemyKT && unit->getTarget() != enemyKT) {
           std::cout << "No target found, going for enemy king tower\n";
           unit->setTarget(enemyKT);
           auto TargetPos = enemyKT->getPosition();
           // Position just outside tower sprite to avoid occupied tiles
           if (unit->getOwner() == &player1_) {
-            TargetPos.y += enemyKT->getSpriteBounds().height / 2 + 1; 
+            TargetPos.y += enemyKT->getSpriteBounds().height / 2 + 1;
           } else {
             TargetPos.y -= enemyKT->getSpriteBounds().height / 2 + 1;
           }
@@ -150,7 +155,7 @@ void Match::update(float deltaTime) {
           }
         }
       }
-    }   
+    }
     unit->update(deltaTime);
   }
 }
@@ -258,7 +263,7 @@ void Match::createUnitFromCard(const UnitCard& card, int gridX, int gridY,
       unit->setTextureShared(tex);
 
       int tileSize = map_.getGrid().getTileSize();
-      float desiredPx = tileSize * 1.5f; 
+      float desiredPx = tileSize * 1.5f;
       auto ts = tex->getSize();
       if (ts.x > 0 && ts.y > 0) {
         unit->getSprite().setScale(desiredPx / static_cast<float>(ts.x),
@@ -300,8 +305,10 @@ std::pair<Tower*, Tower*> Match::getKingTowers() const {
     if (!tptr) continue;
     Tower* t = tptr.get();
     if (!t->isKingTower()) continue;
-    if (t->getOwner() == &player1_) k1 = t;
-    else if (t->getOwner() == &player2_) k2 = t;
+    if (t->getOwner() == &player1_)
+      k1 = t;
+    else if (t->getOwner() == &player2_)
+      k2 = t;
   }
   return {k1, k2};
 }

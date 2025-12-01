@@ -3,8 +3,10 @@
 
 #include <SFML/Graphics.hpp>
 
+#include "../players/AI.hpp"  //To not have the AIDifficulty enum everywhere
+
 class GameState {
-public:
+ public:
   virtual ~GameState() = default;
   virtual void update(float deltaTime) = 0;
   virtual void handleInput(sf::RenderWindow& window, sf::Event event) = 0;

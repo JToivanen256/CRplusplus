@@ -3,13 +3,15 @@
 
 #include "Player.hpp"
 
+enum AIDifficulty { Vihannes, Retardi, Cheater };
+
 class AI {
-public:
+ public:
   AI(Player& p) : player_(p) {}
 
-  void play() const; // AI Strategy
+  void play() const;  // AI Strategy
 
-private:
+ private:
   Player& player_;
 };
 
