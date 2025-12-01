@@ -28,6 +28,7 @@ public:
 
     void draw(sf::RenderWindow& window);
     void defaultGridMap();
+    bool loadFromFile(const std::string& filename);
 
     int getColumns() const;
     int getRows() const;
