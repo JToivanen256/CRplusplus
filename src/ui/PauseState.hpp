@@ -2,6 +2,7 @@
 #define PAUSESTATE_HPP
 
 #include "GameState.hpp"
+#include <memory>
 
 class PauseState : public GameState {
 private:
