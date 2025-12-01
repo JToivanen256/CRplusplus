@@ -172,7 +172,7 @@ bool Grid::loadFromFile(const std::string& filename) {
 void Grid::defaultGridMap() {
   static const std::filesystem::path projectRoot =
       std::filesystem::path(__FILE__).parent_path().parent_path().parent_path();
-  const auto mapPath = projectRoot / "default.map";
+  const auto mapPath = projectRoot / "defaultMap.txt";
 
   if (loadFromFile(mapPath.string())) {
     std::cout << "Could read the file! YEY!" << std::endl;
