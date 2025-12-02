@@ -4,6 +4,8 @@
 
 #include "../game/Match.hpp"
 
+// Returns a move containing card and position based on match and own
+// situation basically, and nullptr if no move is made
 std::unique_ptr<Move> AI::play(Match& match) {
   switch (difficulty_) {
     // Play cheapest units in hand from the back or spell-nuke king tower...test
