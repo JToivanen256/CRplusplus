@@ -16,7 +16,8 @@ int main() {
   sf::Clock clock;
 
   Player player1 = Player("Test", defaultDeck);
-  Player player2 = Player("Test2", defaultDeck);
+  // Player player2 = Player("Test2", defaultDeck);
+  AI player2 = AI("AI", defaultDeck, Retardi);
 
   std::unique_ptr<GameState> currentState = std::make_unique<MenuState>(window);
 
@@ -40,8 +41,8 @@ int main() {
       if (menu->ongoingMatch_) {
         player1.reset();
         player2.reset();
-        currentState = std::make_unique<MatchState>(player1, player2,
-                                                    menu->getAIDifficulty());
+        player2.setDifficulty(menu->getAIDifficulty());  // Update AI difficulty
+        currentState = std::make_unique<MatchState>(player1, player2);
       }
     }
 

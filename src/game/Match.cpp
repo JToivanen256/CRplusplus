@@ -7,11 +7,8 @@
 #include "../entities/DefaultTower.hpp"
 #include "../entities/TestUnit.hpp"
 
-Match::Match(Player& player1, Player& player2, AIDifficulty aiDifficulty)
-    : player1_(player1),
-      player2_(player2),
-      aiDifficulty_(aiDifficulty),
-      map_(30, 50) {
+Match::Match(Player& player1, Player& player2)
+    : player1_(player1), player2_(player2), map_(30, 50) {
   // This is not nice but it will do for now
   switch (player1_.getTowerType()) {
     case TowerType::Default:  // n * tilesize (13), player2 is above on screen

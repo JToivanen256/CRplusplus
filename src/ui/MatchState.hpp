@@ -57,7 +57,7 @@ class MatchState : public GameState {
   std::vector<SpellImpact> activeSpellImpacts_;
 
  public:
-  MatchState(Player& p1, Player& p2, AIDifficulty difficulty);
+  MatchState(Player& p1, Player& p2);
   void update(float deltaTime) override;
   void handleInput(sf::RenderWindow& window, sf::Event event) override;
   void render(sf::RenderWindow& window) override;

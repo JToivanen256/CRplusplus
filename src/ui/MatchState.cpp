@@ -8,8 +8,8 @@
 #include "../players/UnitCard.hpp"
 #include "CardRenderer.hpp"
 
-MatchState::MatchState(Player& p1, Player& p2, AIDifficulty difficulty)
-    : player1_(p1), player2_(p2), match_(p1, p2, difficulty) {
+MatchState::MatchState(Player& p1, Player& p2)
+    : player1_(p1), player2_(p2), match_(p1, p2) {
   if (!font_.loadFromFile("assets/fonts/MomoTrustDisplay-Regular.ttf")) {
     std::cerr << "Failed to load font!" << std::endl;
   }
@@ -17,6 +17,18 @@ MatchState::MatchState(Player& p1, Player& p2, AIDifficulty difficulty)
 
 void MatchState::update(float deltaTime) {
   match_.update(deltaTime);
+
+  // AI returns a valid ptr if it wants to play a card
+  if (std::unique_ptr<Move> move = player2_.play(match_)) {
+    player2_.playCard(move->card);
+    if (std::shared_ptr<UnitCard> unitCard =
+            std::dynamic_pointer_cast<UnitCard>(move->card)) {
+      spawnUnit(move->row, move->col, move->card);
+    } else if (std::shared_ptr<SpellCard> spellCard =
+                   std::dynamic_pointer_cast<SpellCard>(move->card)) {
+      castSpell(move->row, move->col, spellCard);
+    }
+  }
   updateSpellAnimations(deltaTime);
   if (match_.isOver()) {
     matchOver_ = true;
@@ -222,7 +234,7 @@ void MatchState::castSpell(int row, int col,
 
   int rows = grid.getRows();
   int cols = grid.getColumns();
-  sf::Vector2f start = grid.gridToWorldCenter(rows - 5, cols / 2);
+  sf::Vector2f start = grid.gridToWorldCenter(rows - 5, cols / 2 - 1);
 
   SpellFlight flight;
   flight.card = card;
