@@ -44,7 +44,7 @@ MenuState::MenuState(sf::RenderWindow& window) {
 
 void MenuState::update(float deltaTime) {}
 
-// Changing menu item color on hover and size on click
+// Changing menu item color on hover and size on click etc.
 void MenuState::handleInput(sf::RenderWindow& window, sf::Event event) {
   sf::Vector2i mousePos = sf::Mouse::getPosition(window);
   selectedOptionIndex_ = -1;
@@ -60,7 +60,7 @@ void MenuState::handleInput(sf::RenderWindow& window, sf::Event event) {
       } else if (selectedOptionIndex_ == 5) {
         menuOptions_[i].setFillColor(sf::Color::Red);
       } else if (selectedOptionIndex_ != 0) {
-        menuOptions_[i].setFillColor(sf::Color::Yellow);
+        menuOptions_[i].setFillColor(sf::Color(255, 255, 150));  // light yellow
       }
 
       // If mouse is pressed down, shrink button text slightly
@@ -73,6 +73,13 @@ void MenuState::handleInput(sf::RenderWindow& window, sf::Event event) {
     } else {
       menuOptions_[i].setFillColor(sf::Color::White);
       menuOptions_[i].setScale(1.f, 1.f);  // reset size if not hovered anymore
+    }
+
+    // Current difficulty is higlighted in bright yellow
+    if ((i == 1 && selectedAIDifficulty_ == Vihannes) ||
+        (i == 2 && selectedAIDifficulty_ == Retardi) ||
+        (i == 3 && selectedAIDifficulty_ == Cheater)) {
+      menuOptions_[i].setFillColor(sf::Color::Yellow);
     }
   }
 

@@ -29,6 +29,7 @@ void MatchState::update(float deltaTime) {
       castSpell(move->row, move->col, spellCard, player2_);
     }
   }
+
   updateSpellAnimations(deltaTime);
   if (match_.isOver()) {
     matchOver_ = true;
