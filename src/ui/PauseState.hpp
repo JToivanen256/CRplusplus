@@ -4,6 +4,7 @@
 #include <memory>
 
 #include "GameState.hpp"
+#include <memory>
 
 class PauseState : public GameState {
  private:

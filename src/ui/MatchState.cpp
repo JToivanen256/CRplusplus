@@ -1,5 +1,6 @@
 #include "MatchState.hpp"
 
+#include <algorithm>
 #include <iostream>
 #include <string>
 
@@ -16,6 +17,7 @@ MatchState::MatchState(Player& p1, Player& p2, AIDifficulty difficulty)
 
 void MatchState::update(float deltaTime) {
   match_.update(deltaTime);
+  updateSpellAnimations(deltaTime);
   if (match_.isOver()) {
     matchOver_ = true;
   }
@@ -27,10 +29,8 @@ void MatchState::handleInput(sf::RenderWindow& window, sf::Event event) {
     sf::Vector2f mousePos =
         window.mapPixelToCoords(sf::Mouse::getPosition(window));
 
-    // First check if clicking on a card
     bool clickedCard = handleCardClick(mousePos);
 
-    // If the click didn't hit a card but we have a selected card, check grid
     if (!clickedCard && selectedCardIndex_ != -1) {
       handleGridClick(mousePos);
     }
@@ -39,27 +39,22 @@ void MatchState::handleInput(sf::RenderWindow& window, sf::Event event) {
 
 void MatchState::render(sf::RenderWindow& window) {
   match_.render(window);
-  // Draw Elixir bar and hand here
+
   sf::Text elixir(std::to_string(player1_.getElixir()), font_, 30);
   elixir.setPosition(187, 735);
   elixir.setFillColor(sf::Color::White);
   window.draw(elixir);
 
-  // Units are rendered by Match::render (which draws match_.units_) TODO:
-  // implement unit drawing in Unit class
-
-  // Draw player1's hand using CardRenderer
   const auto& cards = player1_.getHand().getCards();
 
   for (size_t i = 0; i < cards.size(); ++i) {
     const auto& card = cards[i];
     float x = cardStartX_ + i * (cardScale_ + cardGap_);
 
-    // Use highlight scale for selected card
-    float scale = (selectedCardIndex_ == (int)i)
+    float scale = (selectedCardIndex_ == static_cast<int>(i))
                       ? cardScale_ / 256.f * highlightScale_
                       : cardScale_ / 256.f;
-    float yPos = (selectedCardIndex_ == (int)i)
+    float yPos = (selectedCardIndex_ == static_cast<int>(i))
                      ? cardY_ - (cardH_ * (highlightScale_ - 1.0f) / 2.0f)
                      : cardY_;
 
@@ -71,7 +66,7 @@ void MatchState::render(sf::RenderWindow& window) {
   int secs = static_cast<int>(remainingTime + 0.5f);
   int minutes = secs / 60;
   int seconds = secs % 60;
-  // Time format
+
   std::string timeStr = std::to_string(minutes) + ":" +
                         (seconds < 10 ? "0" : "") + std::to_string(seconds);
 
@@ -79,6 +74,8 @@ void MatchState::render(sf::RenderWindow& window) {
   time.setPosition(10, 10);
   time.setFillColor(sf::Color::White);
   window.draw(time);
+
+  renderSpellAnimations(window);
 }
 
 std::string MatchState::getWinnerName() const {
@@ -86,7 +83,6 @@ std::string MatchState::getWinnerName() const {
   if (winner) {
     return winner->getName();
   } else {
-    // Shouldn't be possible
     return "No winner wtf";
   }
 }
@@ -98,68 +94,91 @@ bool MatchState::handleCardClick(sf::Vector2f mousePos) {
     float x = cardStartX_ + i * (cardScale_ + cardGap_);
     float y = cardY_;
 
-    // Check if click is within card bounds
     if (mousePos.x >= x && mousePos.x <= x + cardScale_ * 2 &&
         mousePos.y >= y && mousePos.y <= y + cardH_ * 2) {
-      // Toggle selection
-      selectedCardIndex_ = (selectedCardIndex_ == (int)i) ? -1 : (int)i;
+      selectedCardIndex_ = (selectedCardIndex_ == static_cast<int>(i))
+                               ? -1
+                               : static_cast<int>(i);
       return true;
     }
   }
 
-  // Click outside cards - do not deselect here so grid clicks can act on
-  // the current selection. Return false to indicate no card was clicked.
   return false;
 }
 
 void MatchState::handleGridClick(sf::Vector2f mousePos) {
-  // Convert world coordinates to grid coordinates
   auto [row, col] = match_.getMap().getGrid().worldToGrid(mousePos);
 
   if (!match_.getMap().getGrid().inBounds(row, col)) {
     return;
   }
 
-  if (!isValidSpawnPosition(row, col)) {
-    std::cout << "Invalid spawn position!" << std::endl;
-    return;
-  }
-
-  // Get the selected card
   const auto& cards = player1_.getHand().getCards();
-  if (selectedCardIndex_ < 0 || selectedCardIndex_ >= (int)cards.size()) {
+  if (selectedCardIndex_ < 0 ||
+      selectedCardIndex_ >= static_cast<int>(cards.size())) {
     return;
   }
 
   // Make a copy of the card before removing it
-  // Card selectedCard = cards[selectedCardIndex_];
-
   auto cardPtr = cards[selectedCardIndex_];
-  // Play card if elixir is sufficient
-  if (player1_.playCard(cardPtr)) {
-    spawnUnit(row, col, cardPtr);
+  auto unitCard = std::dynamic_pointer_cast<UnitCard>(cardPtr);
+  auto spellCard = std::dynamic_pointer_cast<SpellCard>(cardPtr);
+
+  if (unitCard) {
+    if (!isValidSpawnPosition(row, col)) {
+      std::cout << "Invalid spawn position!" << std::endl;
+      return;
+    }
+  } else if (spellCard) {
+    if (!isValidSpellTarget(row, col)) {
+      std::cout << "Invalid spell target!" << std::endl;
+      return;
+    }
+  } else {
+    std::cout << "Unsupported card type!" << std::endl;
+    return;
   }
 
-  // Deselect card
+  if (player1_.playCard(cardPtr)) {
+    if (unitCard) {
+      spawnUnit(row, col, cardPtr);
+    } else if (spellCard) {
+      castSpell(row, col, spellCard);
+    }
+  }
+
   selectedCardIndex_ = -1;
 }
 
 bool MatchState::isValidSpawnPosition(int row, int col) const {
   const auto& grid = match_.getMap().getGrid();
 
-  // Check if occupied (towers are registered as occupants)
   if (grid.isOccupied(row, col)) {
     return false;
   }
 
-  // Check if on player1's side (lower half)
   int gridRows = grid.getRows();
   int midpoint = gridRows / 2;
   if (row < midpoint + 2) {
     return false;
   }
 
-  // Check if walkable (excludes water tiles)
+  if (!grid.at(row, col).walkable) {
+    return false;
+  }
+
+  return true;
+}
+
+bool MatchState::isValidSpellTarget(int row, int col) const {
+  const auto& grid = match_.getMap().getGrid();
+  /*int gridRows = grid.getRows();
+  int midpoint = gridRows / 2;
+
+  if (row >= midpoint - 2) { // spells should be castable everywhere?
+    return false;
+  }*/
+
   if (!grid.at(row, col).walkable) {
     return false;
   }
@@ -173,19 +192,8 @@ void MatchState::spawnUnit(int row, int col,
     std::cerr << "Invalid card pointer!" << std::endl;
     return;
   }
-  // std::cout << card.isSpell() << std::endl;
   if (auto ucard = std::dynamic_pointer_cast<UnitCard>(cardPtr)) {
     match_.createUnitFromCard(*ucard, col, row, player1_);
-
-  } else {
-    // Fallback for non-unit cards (spell behavior TODO)
-    /*auto unit = std::make_unique<TestUnit>(
-        static_cast<int>(
-            match_.getMap().getGrid().gridToWorldCenter(row, col).x),
-        static_cast<int>(
-            match_.getMap().getGrid().gridToWorldCenter(row, col).y),
-        &player1_);
-    match_.addUnit(std::move(unit));*/
   }
 
   // Register occupancy with a simple id
@@ -193,7 +201,6 @@ void MatchState::spawnUnit(int row, int col,
       static_cast<int>(row * 100 + col);  // Simple unique id based on position
   // match_.getMap().getGrid().addOccupant(row, col, unitId);
 
-  // Debug prints
   std::cout << "Spawned unit for card '" << cardPtr->getName() << "' at grid ("
             << row << ", " << col << ")" << std::endl;
 
@@ -201,5 +208,122 @@ void MatchState::spawnUnit(int row, int col,
     sf::Vector2f pos = unit->getPosition();
     std::string cardName = unit->getName();
     std::cout << cardName << " at grid (" << pos.x << ", " << pos.y << ")\n";
+  }
+}
+
+void MatchState::castSpell(int row, int col,
+                           const std::shared_ptr<SpellCard>& card) {
+  if (!card) {
+    return;
+  }
+
+  const auto& grid = match_.getMap().getGrid();
+  sf::Vector2f target = grid.gridToWorldCenter(row, col);
+
+  int rows = grid.getRows();
+  int cols = grid.getColumns();
+  sf::Vector2f start = grid.gridToWorldCenter(rows - 5, cols / 2);
+
+  SpellFlight flight;
+  flight.card = card;
+  flight.start = start;
+  flight.target = target;
+  activeSpellFlights_.push_back(flight);
+}
+
+void MatchState::applySpellDamage(const SpellCard& card,
+                                  const sf::Vector2f& center) {
+  const float tileSize =
+      static_cast<float>(match_.getMap().getGrid().getTileSize());
+  const float radiusPx = static_cast<float>(card.getRadius()) * tileSize;
+  const float radiusSq = radiusPx * radiusPx;
+
+  auto applySplash = [&](Entity& entity) {
+    sf::Vector2f diff = entity.getPosition() - center;
+    float distSq = diff.x * diff.x + diff.y * diff.y;
+    if (distSq <= radiusSq) {
+      entity.takeDamage(card.getDamage());
+    }
+  };
+
+  for (auto& unit : match_.getUnits()) {
+    if (unit && !unit->isDead()) {
+      // applySplash(*unit);
+      if (unit->getOwner() != &player1_) {  // no friendly fire lol
+        applySplash(*unit);
+      }
+    }
+  }
+
+  for (const auto& tower : match_.getTowers()) {
+    if (tower && !tower->isDead()) {
+      // applySplash(*tower);
+      if (tower->getOwner() != &player1_) {
+        applySplash(*tower);
+      }
+    }
+  }
+}
+
+void MatchState::updateSpellAnimations(float deltaTime) {
+  const float tileSize =
+      static_cast<float>(match_.getMap().getGrid().getTileSize());
+
+  for (auto& flight : activeSpellFlights_) {
+    flight.elapsed += deltaTime;
+    if (!flight.impactTriggered && flight.elapsed >= flight.duration) {
+      flight.impactTriggered = true;
+
+      SpellImpact impact;
+      impact.position = flight.target;
+      impact.radius = static_cast<float>(flight.card->getRadius()) * tileSize;
+      activeSpellImpacts_.push_back(impact);
+
+      applySpellDamage(*flight.card, flight.target);
+    }
+  }
+
+  activeSpellFlights_.erase(
+      std::remove_if(
+          activeSpellFlights_.begin(), activeSpellFlights_.end(),
+          [](const SpellFlight& f) { return f.elapsed >= f.duration + 0.1f; }),
+      activeSpellFlights_.end());
+
+  for (auto& impact : activeSpellImpacts_) {
+    impact.elapsed += deltaTime;
+  }
+
+  activeSpellImpacts_.erase(
+      std::remove_if(
+          activeSpellImpacts_.begin(), activeSpellImpacts_.end(),
+          [](const SpellImpact& i) { return i.elapsed >= i.lifetime; }),
+      activeSpellImpacts_.end());
+}
+
+void MatchState::renderSpellAnimations(sf::RenderWindow& window) {
+  for (const auto& flight : activeSpellFlights_) {
+    float t = std::clamp(flight.elapsed / flight.duration, 0.f, 1.f);
+    sf::Vector2f pos = flight.start + (flight.target - flight.start) * t;
+
+    sf::CircleShape projectile(6.f);
+    projectile.setOrigin(6.f, 6.f);
+    projectile.setFillColor(sf::Color(255, 200, 50));
+    projectile.setOutlineColor(sf::Color::Black);
+    projectile.setOutlineThickness(1.f);
+    projectile.setPosition(pos);
+    window.draw(projectile);
+  }
+
+  for (const auto& impact : activeSpellImpacts_) {
+    float alpha = 1.f - std::clamp(impact.elapsed / impact.lifetime, 0.f, 1.f);
+    sf::CircleShape ring(impact.radius);
+    ring.setOrigin(impact.radius, impact.radius);
+    ring.setPosition(impact.position);
+    ring.setFillColor(
+        sf::Color(255, 120, 0, static_cast<sf::Uint8>(40 * alpha)));
+    ring.setOutlineColor(
+        sf::Color(255, 255, 0, static_cast<sf::Uint8>(200 * alpha)));
+    ring.setOutlineThickness(2.f);
+    window.draw(ring);
   }
 }

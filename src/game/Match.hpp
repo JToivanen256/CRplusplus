@@ -51,6 +51,7 @@ class Match {
 
   float getRemainingTime() const;
   std::vector<std::unique_ptr<Unit>>& getUnits();
+  const std::vector<std::unique_ptr<Tower>>& getTowers() const;
 
   Map& getMap();
   const Map& getMap() const;

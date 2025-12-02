@@ -236,6 +236,10 @@ const Map& Match::getMap() const { return map_; }
 
 std::vector<std::unique_ptr<Unit>>& Match::getUnits() { return units_; }
 
+const std::vector<std::unique_ptr<Tower>>& Match::getTowers() const {
+  return towers_;
+}
+
 void Match::addUnit(std::unique_ptr<Unit> unit) {
   units_.emplace_back(std::move(unit));
 }
