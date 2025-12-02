@@ -23,10 +23,10 @@ void MatchState::update(float deltaTime) {
     player2_.playCard(move->card);
     if (std::shared_ptr<UnitCard> unitCard =
             std::dynamic_pointer_cast<UnitCard>(move->card)) {
-      spawnUnit(move->row, move->col, move->card);
+      spawnUnit(move->row, move->col, move->card, player2_);
     } else if (std::shared_ptr<SpellCard> spellCard =
                    std::dynamic_pointer_cast<SpellCard>(move->card)) {
-      castSpell(move->row, move->col, spellCard);
+      castSpell(move->row, move->col, spellCard, player2_);
     }
   }
   updateSpellAnimations(deltaTime);
@@ -153,9 +153,9 @@ void MatchState::handleGridClick(sf::Vector2f mousePos) {
 
   if (player1_.playCard(cardPtr)) {
     if (unitCard) {
-      spawnUnit(row, col, cardPtr);
+      spawnUnit(row, col, cardPtr, player1_);
     } else if (spellCard) {
-      castSpell(row, col, spellCard);
+      castSpell(row, col, spellCard, player1_);
     }
   }
 
@@ -184,12 +184,6 @@ bool MatchState::isValidSpawnPosition(int row, int col) const {
 
 bool MatchState::isValidSpellTarget(int row, int col) const {
   const auto& grid = match_.getMap().getGrid();
-  /*int gridRows = grid.getRows();
-  int midpoint = gridRows / 2;
-
-  if (row >= midpoint - 2) { // spells should be castable everywhere?
-    return false;
-  }*/
 
   if (!grid.at(row, col).walkable) {
     return false;
@@ -199,13 +193,14 @@ bool MatchState::isValidSpellTarget(int row, int col) const {
 }
 
 void MatchState::spawnUnit(int row, int col,
-                           const std::shared_ptr<Card>& cardPtr) {
+                           const std::shared_ptr<Card>& cardPtr,
+                           Player& owner) {
   if (!cardPtr) {
     std::cerr << "Invalid card pointer!" << std::endl;
     return;
   }
   if (auto ucard = std::dynamic_pointer_cast<UnitCard>(cardPtr)) {
-    match_.createUnitFromCard(*ucard, col, row, player1_);
+    match_.createUnitFromCard(*ucard, col, row, owner);
   }
 
   // Register occupancy with a simple id
@@ -213,18 +208,20 @@ void MatchState::spawnUnit(int row, int col,
       static_cast<int>(row * 100 + col);  // Simple unique id based on position
   // match_.getMap().getGrid().addOccupant(row, col, unitId);
 
-  std::cout << "Spawned unit for card '" << cardPtr->getName() << "' at grid ("
+  /*std::cout << "Spawned unit for card '" << cardPtr->getName() << "' at grid
+  ("
             << row << ", " << col << ")" << std::endl;
 
   for (const auto& unit : match_.getUnits()) {
     sf::Vector2f pos = unit->getPosition();
     std::string cardName = unit->getName();
     std::cout << cardName << " at grid (" << pos.x << ", " << pos.y << ")\n";
-  }
+  }*/
 }
 
 void MatchState::castSpell(int row, int col,
-                           const std::shared_ptr<SpellCard>& card) {
+                           const std::shared_ptr<SpellCard>& card,
+                           Player& owner) {
   if (!card) {
     return;
   }
@@ -234,17 +231,23 @@ void MatchState::castSpell(int row, int col,
 
   int rows = grid.getRows();
   int cols = grid.getColumns();
-  sf::Vector2f start = grid.gridToWorldCenter(rows - 5, cols / 2 - 1);
+  sf::Vector2f start;
+  if (owner.getName() == player1_.getName()) {
+    start = grid.gridToWorldCenter(rows - 5, cols / 2 - 1);
+  } else {
+    start = grid.gridToWorldCenter(4, cols / 2 - 1);
+  }
 
   SpellFlight flight;
   flight.card = card;
   flight.start = start;
   flight.target = target;
+  flight.owner = &owner;
   activeSpellFlights_.push_back(flight);
 }
 
 void MatchState::applySpellDamage(const SpellCard& card,
-                                  const sf::Vector2f& center) {
+                                  const sf::Vector2f& center, Player& owner) {
   const float tileSize =
       static_cast<float>(match_.getMap().getGrid().getTileSize());
   const float radiusPx = static_cast<float>(card.getRadius()) * tileSize;
@@ -261,7 +264,7 @@ void MatchState::applySpellDamage(const SpellCard& card,
   for (auto& unit : match_.getUnits()) {
     if (unit && !unit->isDead()) {
       // applySplash(*unit);
-      if (unit->getOwner() != &player1_) {  // no friendly fire lol
+      if (unit->getOwner() != &owner) {  // no friendly fire lol
         applySplash(*unit);
       }
     }
@@ -270,7 +273,7 @@ void MatchState::applySpellDamage(const SpellCard& card,
   for (const auto& tower : match_.getTowers()) {
     if (tower && !tower->isDead()) {
       // applySplash(*tower);
-      if (tower->getOwner() != &player1_) {
+      if (tower->getOwner() != &owner) {
         applySplash(*tower);
       }
     }
@@ -291,7 +294,7 @@ void MatchState::updateSpellAnimations(float deltaTime) {
       impact.radius = static_cast<float>(flight.card->getRadius()) * tileSize;
       activeSpellImpacts_.push_back(impact);
 
-      applySpellDamage(*flight.card, flight.target);
+      applySpellDamage(*flight.card, flight.target, *flight.owner);
     }
   }
 
