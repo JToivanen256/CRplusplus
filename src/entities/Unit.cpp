@@ -201,3 +201,5 @@ Entity* Unit::getTarget() const {
 sf::Vector2f Unit::getLastTargetPoint() const { return lastTargetPoint_; }
 
 void Unit::setLastTargetPoint(const sf::Vector2f& point) { lastTargetPoint_ = point; }
+
+bool Unit::targetsOnlyTowers() const { return onlyTargerTowers_; }

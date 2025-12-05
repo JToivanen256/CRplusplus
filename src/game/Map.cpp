@@ -26,7 +26,7 @@ struct node {
 std::vector<sf::Vector2f> Map::findPath(sf::Vector2f& from, sf::Vector2f& to) {
   auto [startRow, startCol] = grid_.worldToGrid(from);
   auto [goalRow, goalCol] = grid_.worldToGrid(to);
-  std::cout << "Finding path from (" << startRow << ", " << startCol << ") to ("<< goalRow << ", " << goalCol << ")" << std::endl;
+  //std::cout << "Finding path from (" << startRow << ", " << startCol << ") to ("<< goalRow << ", " << goalCol << ")" << std::endl;
 
   const int rows = grid_.getRows();
   const int cols = grid_.getColumns();
@@ -109,7 +109,7 @@ std::vector<sf::Vector2f> Map::findPath(sf::Vector2f& from, sf::Vector2f& to) {
 
       if (closedSet[nr][nc]) continue; 
       if (grid_.isOccupied(nr, nc) && !(nr == goalRow && nc == goalCol)) {
-        std::cout << "Skipping occupied tile at (" << nr << ", " << nc << ")\n";
+        //std::cout << "Skipping occupied tile at (" << nr << ", " << nc << ")\n";
         continue;
       }
 

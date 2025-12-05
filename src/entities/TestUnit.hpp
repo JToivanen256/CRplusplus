@@ -7,10 +7,9 @@ class TestUnit : public Unit {
  public:
   TestUnit(float x, float y, int health, int damage,
            float attackCooldown, float attackRange, float movementSpeed,
-           float visionRange, Player* owner, const std::string& name)
+           float visionRange, Player* owner, const std::string& name, bool onlyTargetTowers)
       : Unit(x, y, health, damage, attackCooldown, attackRange, movementSpeed,
-             visionRange, owner, name) {
-  }
+             visionRange, owner, name, onlyTargetTowers) {}
 };
 
 #endif

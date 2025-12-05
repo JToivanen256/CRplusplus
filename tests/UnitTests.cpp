@@ -9,8 +9,8 @@ TEST(UnitTest, Attack) {
   Player player2("Player2", defaultDeck);
 
   // Create two units
-  Unit unit1(0.0f, 0.0f, 100, 20, 1.0f, 30.0f, 50.0f, 100.0f, &player1, "Unit1");
-  Unit unit2(10.0f, 0.0f, 100, 15, 1.0f, 30.0f, 50.0f, 100.0f, &player2, "Unit2");
+  Unit unit1(0.0f, 0.0f, 100, 20, 1.0f, 30.0f, 50.0f, 100.0f, &player1, "Unit1", false);
+  Unit unit2(10.0f, 0.0f, 100, 15, 1.0f, 30.0f, 50.0f, 100.0f, &player2, "Unit2", false);
 
   // Ensure unit1 can attack unit2
   EXPECT_TRUE(unit1.canAttack());
