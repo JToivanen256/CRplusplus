@@ -1,7 +1,7 @@
 #include <gtest/gtest.h>
 #include "../src/entities/Unit.hpp"
 #include "../assets/Cards and Decks/decks.hpp"  // For default Deck
-
+#include "../src/game/Match.hpp"
 
 TEST(UnitTest, Attack) {
   // Create two players
@@ -46,4 +46,35 @@ TEST(PlayerTest, PlayCard) {
   EXPECT_EQ(player.getElixir(), card->getCost());
   bool result2 = player.playCard(card);
   EXPECT_TRUE(result2); // Should succeed
+}
+
+TEST(MatchTest, AllEntities) {
+  Player player1("Player1", defaultDeck);
+  Player player2("Player2", defaultDeck);
+  Match match(player1, player2);
+
+  // Initially, there should be only towers
+  auto entities = match.allEntities();
+  int towerCount = 0;
+  for (const auto& entity : entities) {
+    if (dynamic_cast<Tower*>(entity)) {
+      towerCount++;
+    }
+  }
+  EXPECT_EQ(towerCount, 6); // 3 towers per player
+
+  // Add a unit and a building
+  auto& card = player1.getDeck().getCards().at(0);
+  match.createUnitFromCard(
+      *std::dynamic_pointer_cast<UnitCard>(card), 10, 10, player1);
+
+  // Re-fetch entities
+  entities = match.allEntities();
+  int unitCount = 0;
+  for (const auto& entity : entities) {
+    if (dynamic_cast<Unit*>(entity)) {
+      unitCount++;
+    }
+  }
+  EXPECT_EQ(unitCount, 1); // One unit added
 }

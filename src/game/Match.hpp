@@ -34,8 +34,6 @@ class Match {
 
   sf::Texture basicTestUnitTexture_;
 
-  std::vector<Entity*> allEntities();
-
  public:
   Match(Player& player1, Player& player2);
 
@@ -67,6 +65,8 @@ class Match {
   }
   void createUnitFromCard(const UnitCard& card, int gridX, int girdY,
                           Player& owner);
+
+  std::vector<Entity*> allEntities();
 };
 
 #endif
