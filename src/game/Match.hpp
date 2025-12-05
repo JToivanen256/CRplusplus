@@ -67,6 +67,8 @@ class Match {
                           Player& owner);
 
   std::vector<Entity*> allEntities();
+
+  std::vector<Entity*> allTowerEntities();
 };
 
 #endif

@@ -15,9 +15,9 @@ Match::Match(Player& player1, Player& player2)
       towers_.emplace_back(
           std::make_unique<DefaultTower>(15 * 13, 45 * 13, true, &player1_));
       towers_.emplace_back(
-          std::make_unique<DefaultTower>(5 * 13, 43 * 13, false, &player1_));
+          std::make_unique<DefaultTower>(6 * 13, 41 * 13, false, &player1_));
       towers_.emplace_back(
-          std::make_unique<DefaultTower>(25 * 13, 43 * 13, false, &player1_));
+          std::make_unique<DefaultTower>(24 * 13, 41 * 13, false, &player1_));
       break;
   }
 
@@ -26,9 +26,9 @@ Match::Match(Player& player1, Player& player2)
       towers_.emplace_back(
           std::make_unique<DefaultTower>(15 * 13, 5 * 13, true, &player2_));
       towers_.emplace_back(
-          std::make_unique<DefaultTower>(5 * 13, 7 * 13, false, &player2_));
+          std::make_unique<DefaultTower>(6 * 13, 9 * 13, false, &player2_));
       towers_.emplace_back(
-          std::make_unique<DefaultTower>(25 * 13, 7 * 13, false, &player2_));
+          std::make_unique<DefaultTower>(24 * 13, 9 * 13, false, &player2_));
       break;
   }
   map_.generateDefaultMap();
@@ -109,6 +109,11 @@ void Match::update(float deltaTime) {
   // Update units
   for (auto& unit : units_) {
     if (!unit->isAttacking()) {
+      if (unit->targetsOnlyTowers()) {
+        entities = allTowerEntities();
+      } else {
+        entities = allEntities();
+      }
       auto target = unit->scanNearestEnemy(entities);
       // If found a target, set it and plan path
       if (target.first) {
@@ -255,7 +260,7 @@ void Match::createUnitFromCard(const UnitCard& card, int gridX, int gridY,
   auto unit = std::make_unique<TestUnit>(
       worldX, worldY, card.getHealth(), card.getDamage(),
       card.getAttackCooldown(), card.getAttackRange(), card.getMovementSpeed(),
-      card.getVisionRange(), &owner, card.getName());
+      card.getVisionRange(), &owner, card.getName(), card.isBuildingTargeter());
 
   {
     std::string spritePath = "assets/sprites/" + card.getSpritePath();
@@ -312,4 +317,12 @@ std::pair<Tower*, Tower*> Match::getKingTowers() const {
       k2 = t;
   }
   return {k1, k2};
+}
+
+std::vector<Entity*> Match::allTowerEntities() {
+  std::vector<Entity*> entities;
+  for (const auto& tower : towers_) {
+    entities.push_back(tower.get());
+  }
+  return entities;
 }
