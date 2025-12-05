@@ -63,7 +63,7 @@ int main() {
 
     // If in MatchState and pause requested, switch to PauseState
     if (MatchState* match = dynamic_cast<MatchState*>(currentState.get())) {
-      if (sf::Keyboard::isKeyPressed(sf::Keyboard::P)) {
+      if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) {
         // Save current MatchState into PauseState to resume later
         auto prev = std::move(currentState);
         currentState = std::make_unique<PauseState>(window, std::move(prev));

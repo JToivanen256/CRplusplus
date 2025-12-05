@@ -1,0 +1,1 @@
+To run tests: build, then execute "./build/tests/test_core" in the root

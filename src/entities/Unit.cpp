@@ -160,7 +160,6 @@ void Unit::update(float deltaTime) {
           currentPathIndex_++;
         }
       }
-      std::cout << "Moving toward target position: (" << targetPosition_.x << ", " << targetPosition_.y << ")\n";
       moveToward(targetPosition_, deltaTime);
     }
   } else { // no target, should not happen during the game due to auto-targeting on king tower
