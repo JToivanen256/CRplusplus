@@ -4,11 +4,13 @@
       "name": "Win32",
       "includePath": ["${workspaceFolder}/**"],
       "defines": ["_DEBUG", "UNICODE", "_UNICODE"],
+      "compileCommands": "${workspaceFolder}/build/compile_commands.json",
       "windowsSdkVersion": "10.0.19041.0",
       "compilerPath": "cl.exe",
       "cStandard": "c17",
       "cppStandard": "c++17",
-      "intelliSenseMode": "windows-msvc-x64"
+      "intelliSenseMode": "windows-msvc-x64",
+      "browse": { "path": [ "${workspaceFolder}/src", "${workspaceFolder}/build" ] }
     }
   ],
   "version": 4

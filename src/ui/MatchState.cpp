@@ -17,6 +17,19 @@ MatchState::MatchState(Player& p1, Player& p2)
 
 void MatchState::update(float deltaTime) {
   match_.update(deltaTime);
+
+  // AI returns a valid ptr if it wants to play a card
+  if (std::unique_ptr<Move> move = player2_.play(match_)) {
+    player2_.playCard(move->card);
+    if (std::shared_ptr<UnitCard> unitCard =
+            std::dynamic_pointer_cast<UnitCard>(move->card)) {
+      spawnUnit(move->row, move->col, move->card, player2_);
+    } else if (std::shared_ptr<SpellCard> spellCard =
+                   std::dynamic_pointer_cast<SpellCard>(move->card)) {
+      castSpell(move->row, move->col, spellCard, player2_);
+    }
+  }
+
   updateSpellAnimations(deltaTime);
   if (match_.isOver()) {
     matchOver_ = true;
@@ -61,6 +74,7 @@ void MatchState::render(sf::RenderWindow& window) {
     cardRenderer_.renderCard(*card, window, {x, yPos}, {scale, scale}, font_);
   }
 
+  // Show remaining time in the match by getting the info from Match
   float remainingTime = match_.getRemainingTime();
   int secs = static_cast<int>(remainingTime + 0.5f);
   int minutes = secs / 60;
@@ -95,8 +109,9 @@ bool MatchState::handleCardClick(sf::Vector2f mousePos) {
 
     if (mousePos.x >= x && mousePos.x <= x + cardScale_ * 2 &&
         mousePos.y >= y && mousePos.y <= y + cardH_ * 2) {
-      selectedCardIndex_ = (selectedCardIndex_ == static_cast<int>(i)) ? -1
-                                                                      : static_cast<int>(i);
+      selectedCardIndex_ = (selectedCardIndex_ == static_cast<int>(i))
+                               ? -1
+                               : static_cast<int>(i);
       return true;
     }
   }
@@ -112,10 +127,12 @@ void MatchState::handleGridClick(sf::Vector2f mousePos) {
   }
 
   const auto& cards = player1_.getHand().getCards();
-  if (selectedCardIndex_ < 0 || selectedCardIndex_ >= static_cast<int>(cards.size())) {
+  if (selectedCardIndex_ < 0 ||
+      selectedCardIndex_ >= static_cast<int>(cards.size())) {
     return;
   }
 
+  // Make a copy of the card before removing it
   auto cardPtr = cards[selectedCardIndex_];
   auto unitCard = std::dynamic_pointer_cast<UnitCard>(cardPtr);
   auto spellCard = std::dynamic_pointer_cast<SpellCard>(cardPtr);
@@ -137,9 +154,9 @@ void MatchState::handleGridClick(sf::Vector2f mousePos) {
 
   if (player1_.playCard(cardPtr)) {
     if (unitCard) {
-      spawnUnit(row, col, cardPtr);
+      spawnUnit(row, col, cardPtr, player1_);
     } else if (spellCard) {
-      castSpell(row, col, spellCard);
+      castSpell(row, col, spellCard, player1_);
     }
   }
 
@@ -168,12 +185,6 @@ bool MatchState::isValidSpawnPosition(int row, int col) const {
 
 bool MatchState::isValidSpellTarget(int row, int col) const {
   const auto& grid = match_.getMap().getGrid();
-  int gridRows = grid.getRows();
-  int midpoint = gridRows / 2;
-
-  if (row >= midpoint - 2) {
-    return false;
-  }
 
   if (!grid.at(row, col).walkable) {
     return false;
@@ -182,29 +193,36 @@ bool MatchState::isValidSpellTarget(int row, int col) const {
   return true;
 }
 
-void MatchState::spawnUnit(int row, int col, const std::shared_ptr<Card>& cardPtr) {
+void MatchState::spawnUnit(int row, int col,
+                           const std::shared_ptr<Card>& cardPtr,
+                           Player& owner) {
   if (!cardPtr) {
     std::cerr << "Invalid card pointer!" << std::endl;
     return;
   }
-
   if (auto ucard = std::dynamic_pointer_cast<UnitCard>(cardPtr)) {
-    match_.createUnitFromCard(*ucard, col, row, player1_);
+    match_.createUnitFromCard(*ucard, col, row, owner);
   }
 
-  int unitId = static_cast<int>(row * 100 + col);
+  // Register occupancy with a simple id
+  int unitId =
+      static_cast<int>(row * 100 + col);  // Simple unique id based on position
+  // match_.getMap().getGrid().addOccupant(row, col, unitId);
 
-  std::cout << "Spawned unit for card '" << cardPtr->getName() << "' at grid ("
+  /*std::cout << "Spawned unit for card '" << cardPtr->getName() << "' at grid
+  ("
             << row << ", " << col << ")" << std::endl;
 
   for (const auto& unit : match_.getUnits()) {
     sf::Vector2f pos = unit->getPosition();
     std::string cardName = unit->getName();
     std::cout << cardName << " at grid (" << pos.x << ", " << pos.y << ")\n";
-  }
+  }*/
 }
 
-void MatchState::castSpell(int row, int col, const std::shared_ptr<SpellCard>& card) {
+void MatchState::castSpell(int row, int col,
+                           const std::shared_ptr<SpellCard>& card,
+                           Player& owner) {
   if (!card) {
     return;
   }
@@ -214,17 +232,25 @@ void MatchState::castSpell(int row, int col, const std::shared_ptr<SpellCard>& c
 
   int rows = grid.getRows();
   int cols = grid.getColumns();
-  sf::Vector2f start = grid.gridToWorldCenter(rows - 2, cols / 2);
+  sf::Vector2f start;
+  if (owner.getName() == player1_.getName()) {
+    start = grid.gridToWorldCenter(rows - 5, cols / 2 - 1);
+  } else {
+    start = grid.gridToWorldCenter(4, cols / 2 - 1);
+  }
 
   SpellFlight flight;
   flight.card = card;
   flight.start = start;
   flight.target = target;
+  flight.owner = &owner;
   activeSpellFlights_.push_back(flight);
 }
 
-void MatchState::applySpellDamage(const SpellCard& card, const sf::Vector2f& center) {
-  const float tileSize = static_cast<float>(match_.getMap().getGrid().getTileSize());
+void MatchState::applySpellDamage(const SpellCard& card,
+                                  const sf::Vector2f& center, Player& owner) {
+  const float tileSize =
+      static_cast<float>(match_.getMap().getGrid().getTileSize());
   const float radiusPx = static_cast<float>(card.getRadius()) * tileSize;
   const float radiusSq = radiusPx * radiusPx;
 
@@ -238,19 +264,26 @@ void MatchState::applySpellDamage(const SpellCard& card, const sf::Vector2f& cen
 
   for (auto& unit : match_.getUnits()) {
     if (unit && !unit->isDead()) {
-      applySplash(*unit);
+      // applySplash(*unit);
+      if (unit->getOwner() != &owner) {  // no friendly fire lol
+        applySplash(*unit);
+      }
     }
   }
 
   for (const auto& tower : match_.getTowers()) {
     if (tower && !tower->isDead()) {
-      applySplash(*tower);
+      // applySplash(*tower);
+      if (tower->getOwner() != &owner) {
+        applySplash(*tower);
+      }
     }
   }
 }
 
 void MatchState::updateSpellAnimations(float deltaTime) {
-  const float tileSize = static_cast<float>(match_.getMap().getGrid().getTileSize());
+  const float tileSize =
+      static_cast<float>(match_.getMap().getGrid().getTileSize());
 
   for (auto& flight : activeSpellFlights_) {
     flight.elapsed += deltaTime;
@@ -262,15 +295,14 @@ void MatchState::updateSpellAnimations(float deltaTime) {
       impact.radius = static_cast<float>(flight.card->getRadius()) * tileSize;
       activeSpellImpacts_.push_back(impact);
 
-      applySpellDamage(*flight.card, flight.target);
+      applySpellDamage(*flight.card, flight.target, *flight.owner);
     }
   }
 
   activeSpellFlights_.erase(
-      std::remove_if(activeSpellFlights_.begin(), activeSpellFlights_.end(),
-                     [](const SpellFlight& f) {
-                       return f.elapsed >= f.duration + 0.1f;
-                     }),
+      std::remove_if(
+          activeSpellFlights_.begin(), activeSpellFlights_.end(),
+          [](const SpellFlight& f) { return f.elapsed >= f.duration + 0.1f; }),
       activeSpellFlights_.end());
 
   for (auto& impact : activeSpellImpacts_) {
@@ -278,10 +310,9 @@ void MatchState::updateSpellAnimations(float deltaTime) {
   }
 
   activeSpellImpacts_.erase(
-      std::remove_if(activeSpellImpacts_.begin(), activeSpellImpacts_.end(),
-                     [](const SpellImpact& i) {
-                       return i.elapsed >= i.lifetime;
-                     }),
+      std::remove_if(
+          activeSpellImpacts_.begin(), activeSpellImpacts_.end(),
+          [](const SpellImpact& i) { return i.elapsed >= i.lifetime; }),
       activeSpellImpacts_.end());
 }
 
@@ -304,8 +335,10 @@ void MatchState::renderSpellAnimations(sf::RenderWindow& window) {
     sf::CircleShape ring(impact.radius);
     ring.setOrigin(impact.radius, impact.radius);
     ring.setPosition(impact.position);
-    ring.setFillColor(sf::Color(255, 120, 0, static_cast<sf::Uint8>(40 * alpha)));
-    ring.setOutlineColor(sf::Color(255, 255, 0, static_cast<sf::Uint8>(200 * alpha)));
+    ring.setFillColor(
+        sf::Color(255, 120, 0, static_cast<sf::Uint8>(40 * alpha)));
+    ring.setOutlineColor(
+        sf::Color(255, 255, 0, static_cast<sf::Uint8>(200 * alpha)));
     ring.setOutlineThickness(2.f);
     window.draw(ring);
   }

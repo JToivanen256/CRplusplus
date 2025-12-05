@@ -1,11 +1,20 @@
 #ifndef PLAYER_HPP
 #define PLAYER_HPP
 
+#include <memory>
 #include <string>
 
 #include "Deck.hpp"
 #include "Hand.hpp"
 #include "SFML/Graphics.hpp"
+
+class Match;
+
+struct Move {
+  int row;
+  int col;
+  std::shared_ptr<Card> card;
+};
 
 enum class TowerType { Default };
 
@@ -20,21 +29,26 @@ class Player {
   Hand hand_;
   float elixirRegenRate_ = 1.0f;
   float elixirTimer_ = 0.0f;
-  TowerType towerType_ = TowerType::Default; // In case we have different tower types later
-  sf::Color color_;  // Color representing the player in-game
+  TowerType towerType_ =
+      TowerType::Default;  // In case we have different tower types later
+  sf::Color color_;        // Color representing the player in-game
 
  public:
-  void reset(); // Resets player state for a new match
+  void reset();  // Resets player state for a new match
   // Regen elixir over time
   void update(float deltaTime);
 
+  virtual std::unique_ptr<Move> play(Match& match) {
+    return nullptr;
+  }  // For AI
+
   // Actions
-  //void drawCard();
+  // void drawCard();
   bool playCard(const std::shared_ptr<Card>& card);
 
   // Deck and Hand
-  //void shuffleDeck();
-  //void initializeHand();
+  // void shuffleDeck();
+  // void initializeHand();
   void updateHand();
 
   // Getters

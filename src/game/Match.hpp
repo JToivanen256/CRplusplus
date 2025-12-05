@@ -11,6 +11,7 @@
 #include "../entities/Spell.hpp"
 #include "../entities/Tower.hpp"
 #include "../entities/Unit.hpp"
+#include "../players/AI.hpp"
 #include "../players/Player.hpp"
 #include "../players/UnitCard.hpp"
 #include "Map.hpp"
@@ -32,8 +33,6 @@ class Match {
   void checkForWinner();
 
   sf::Texture basicTestUnitTexture_;
-
-  std::vector<Entity*> allEntities();
 
  public:
   Match(Player& player1, Player& player2);
@@ -66,6 +65,8 @@ class Match {
   }
   void createUnitFromCard(const UnitCard& card, int gridX, int girdY,
                           Player& owner);
+
+  std::vector<Entity*> allEntities();
 };
 
 #endif

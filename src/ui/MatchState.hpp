@@ -21,6 +21,7 @@ class MatchState : public GameState {
     float duration = 1.3f;
     float elapsed = 0.f;
     bool impactTriggered = false;
+    Player* owner;
   };
 
   struct SpellImpact {
@@ -47,11 +48,14 @@ class MatchState : public GameState {
   void handleGridClick(sf::Vector2f mousePos);
   bool isValidSpawnPosition(int row, int col) const;
   bool isValidSpellTarget(int row, int col) const;
-  void spawnUnit(int row, int col, const std::shared_ptr<Card>& cardPtr);
-  void castSpell(int row, int col, const std::shared_ptr<SpellCard>& card);
+  void spawnUnit(int row, int col, const std::shared_ptr<Card>& cardPtr,
+                 Player& owner);
+  void castSpell(int row, int col, const std::shared_ptr<SpellCard>& card,
+                 Player& owner);
   void updateSpellAnimations(float deltaTime);
   void renderSpellAnimations(sf::RenderWindow& window);
-  void applySpellDamage(const SpellCard& card, const sf::Vector2f& center);
+  void applySpellDamage(const SpellCard& card, const sf::Vector2f& center,
+                        Player& owner);
 
   std::vector<SpellFlight> activeSpellFlights_;
   std::vector<SpellImpact> activeSpellImpacts_;

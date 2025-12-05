@@ -6,9 +6,9 @@
 #include "players/AI.hpp"
 #include "players/Deck.hpp"
 #include "players/Player.hpp"
+#include "ui/EndState.hpp"
 #include "ui/MatchState.hpp"
 #include "ui/MenuState.hpp"
-#include "ui/EndState.hpp"
 #include "ui/PauseState.hpp"
 
 int main() {
@@ -16,7 +16,8 @@ int main() {
   sf::Clock clock;
 
   Player player1 = Player("Test", defaultDeck);
-  Player player2 = Player("Test2", defaultDeck);
+  // Player player2 = Player("Test2", defaultDeck);
+  AI player2 = AI("AI", defaultDeck, Retardi);
 
   std::unique_ptr<GameState> currentState = std::make_unique<MenuState>(window);
 
@@ -29,7 +30,7 @@ int main() {
 
     float deltaTime = clock.restart().asSeconds();
 
-    currentState->update(1*deltaTime);
+    currentState->update(1 * deltaTime);
 
     window.clear();
     currentState->render(window);
@@ -40,11 +41,12 @@ int main() {
       if (menu->ongoingMatch_) {
         player1.reset();
         player2.reset();
+        player2.setDifficulty(menu->getAIDifficulty());  // Update AI difficulty
         currentState = std::make_unique<MatchState>(player1, player2);
       }
     }
 
-      // If in MatchState and matchOver_ is true, switch to EndState
+    // If in MatchState and matchOver_ is true, switch to EndState
     if (MatchState* match = dynamic_cast<MatchState*>(currentState.get())) {
       if (match->matchOver_) {
         std::string winner = match->getWinnerName();
@@ -60,7 +62,7 @@ int main() {
     }
 
     // If in MatchState and pause requested, switch to PauseState
-    if (MatchState* match = dynamic_cast<MatchState*>(currentState.get())) { 
+    if (MatchState* match = dynamic_cast<MatchState*>(currentState.get())) {
       if (sf::Keyboard::isKeyPressed(sf::Keyboard::P)) {
         // Save current MatchState into PauseState to resume later
         auto prev = std::move(currentState);
