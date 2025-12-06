@@ -19,16 +19,8 @@ class AI : public Player {
 
  private:
   AIDifficulty difficulty_;
+  std::shared_ptr<Card> favoriteCard_ =
+      nullptr;  // To have a persistent card choice to play
 };
 
 #endif
-
-/*class AI {
- public:
-  AI(Player& p) : player_(p) {}
-
-  void play() const;  // AI Strategy
-
- private:
-  Player& player_;
-};*/

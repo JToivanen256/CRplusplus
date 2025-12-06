@@ -37,9 +37,15 @@ std::unique_ptr<Move> AI::play(Match& match) {
 
       std::mt19937 rng(std::random_device{}());
       std::uniform_int_distribution<> cardDist(0, hand.size() - 1);
-      std::shared_ptr<Card> targetCard = hand[cardDist(rng)];
+      // std::shared_ptr<Card> targetCard = hand[cardDist(rng)];
 
-      if (this->getElixir() < targetCard->getCost() + 1) {
+      if (!favoriteCard_ ||
+          std::find(hand.begin(), hand.end(), favoriteCard_) == hand.end()) {
+        // Pick new favorite if none or if previous gets played
+        favoriteCard_ = hand[cardDist(rng)];
+      }
+
+      if (this->getElixir() < favoriteCard_->getCost() + 1) {
         break;  // No elixir
       }
 
@@ -47,7 +53,7 @@ std::unique_ptr<Move> AI::play(Match& match) {
       int row, col;
       const auto& grid = match.getMap().getGrid();
 
-      if (targetCard->isSpell()) {
+      if (favoriteCard_->isSpell()) {
         // Spells go literally anywhere
         std::uniform_int_distribution<> rowDist(0, grid.getRows() - 1);
         std::uniform_int_distribution<> colDist(0, grid.getColumns() - 1);
@@ -94,7 +100,7 @@ std::unique_ptr<Move> AI::play(Match& match) {
         }
       }
 
-      return std::make_unique<Move>(Move{row, col, targetCard});
+      return std::make_unique<Move>(Move{row, col, favoriteCard_});
     } break;
 
     case Cheater:  // TODO
