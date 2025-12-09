@@ -37,7 +37,6 @@ std::unique_ptr<Move> AI::play(Match& match) {
 
       std::mt19937 rng(std::random_device{}());
       std::uniform_int_distribution<> cardDist(0, hand.size() - 1);
-      // std::shared_ptr<Card> targetCard = hand[cardDist(rng)];
 
       if (!favoriteCard_ ||
           std::find(hand.begin(), hand.end(), favoriteCard_) == hand.end()) {

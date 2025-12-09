@@ -1,10 +1,9 @@
 #include "Grid.hpp"
 
 #include <algorithm>
-#include <iostream>
-#include <fstream>
 #include <filesystem>
-
+#include <fstream>
+#include <iostream>
 
 Grid::Grid(int xSize, int ySize)
     : columns(xSize), rows(ySize), tiles(xSize * ySize) {
@@ -117,7 +116,7 @@ bool Grid::loadFromFile(const std::string& filename) {
 
   int fileColumns, fileRows;
   file >> fileColumns >> fileRows;
-  
+
   if (fileColumns != columns || fileRows != rows) {
     file.close();
     return false;
@@ -132,24 +131,25 @@ bool Grid::loadFromFile(const std::string& filename) {
       return false;
     }
 
-    for (int col = 0; col < columns && col < static_cast<int>(line.length()); col++) {
+    for (int col = 0; col < columns && col < static_cast<int>(line.length());
+         col++) {
       auto& t = tiles[row * columns + col];
       char tileChar = line[col];
 
       switch (tileChar) {
-        case 'G': // Grass
+        case 'G':  // Grass
           t.shape.setFillColor(sf::Color::Green);
           t.walkable = true;
           t.cost = 1.f;
           t.flag = TileFlag::Grass;
           break;
-        case 'W': // Water
+        case 'W':  // Water
           t.shape.setFillColor(sf::Color(0, 153, 255));
           t.walkable = false;
           t.cost = 1.f;
           t.flag = TileFlag::Water;
           break;
-        case 'B': // Bridge
+        case 'B':  // Bridge
           t.shape.setFillColor(sf::Color(210, 105, 30));
           t.walkable = true;
           t.cost = 1.f;
@@ -179,9 +179,10 @@ void Grid::defaultGridMap() {
     return;
   }
 
-  // If can't read from file hten use the default map
-  std::cout << "Could not load map file, using default map written in code" << std::endl;
-  
+  // If can't read from file then use the default map
+  std::cout << "Could not load map file, using default map written in code"
+            << std::endl;
+
   for (int row = 0; row < rows; row++) {
     for (int column = 0; column < columns; column++) {
       auto& t = tiles[row * columns + column];

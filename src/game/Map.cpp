@@ -1,8 +1,8 @@
 #include "Map.hpp"
-#include <cmath>
-#include <queue>
-#include <iostream>
 
+#include <cmath>
+#include <iostream>
+#include <queue>
 
 Map::Map(int width, int height) : grid_(width, height) {}
 
@@ -22,23 +22,23 @@ struct node {
   node* parent = nullptr;
 };
 
-// A* pathfinding 
+// A* pathfinding
 std::vector<sf::Vector2f> Map::findPath(sf::Vector2f& from, sf::Vector2f& to) {
   auto [startRow, startCol] = grid_.worldToGrid(from);
   auto [goalRow, goalCol] = grid_.worldToGrid(to);
-  //std::cout << "Finding path from (" << startRow << ", " << startCol << ") to ("<< goalRow << ", " << goalCol << ")" << std::endl;
 
   const int rows = grid_.getRows();
   const int cols = grid_.getColumns();
 
   if (startRow < 0 || startCol < 0 || goalRow < 0 || goalCol < 0 ||
-      startRow >= rows || startCol >= cols || goalRow >= rows || goalCol >= cols) {
+      startRow >= rows || startCol >= cols || goalRow >= rows ||
+      goalCol >= cols) {
     std::cout << "Start or goal out of bounds!\n";
     return {};
   }
   if (startRow == goalRow && startCol == goalCol) {
     std::cout << "Start is the same as goal!\n";
-    return { grid_.gridToWorld(startRow, startCol) };
+    return {grid_.gridToWorld(startRow, startCol)};
   }
 
   // Calvculate heuristic (octile distance)
@@ -67,11 +67,11 @@ std::vector<sf::Vector2f> Map::findPath(sf::Vector2f& from, sf::Vector2f& to) {
   auto cmp = [&](node* a, node* b) {
     float fA = a->fCost();
     float fB = b->fCost();
-    
+
     if (std::abs(fA - fB) < 0.0001f) {
-        return a->hCost > b->hCost;
+      return a->hCost > b->hCost;
     }
-    return fA > fB; 
+    return fA > fB;
   };
 
   // Priority queue for open list
@@ -107,9 +107,8 @@ std::vector<sf::Vector2f> Map::findPath(sf::Vector2f& from, sf::Vector2f& to) {
       if (nr < 0 || nr >= rows || nc < 0 || nc >= cols) continue;
       if (!grid_.at(nr, nc).walkable) continue;
 
-      if (closedSet[nr][nc]) continue; 
+      if (closedSet[nr][nc]) continue;
       if (grid_.isOccupied(nr, nc) && !(nr == goalRow && nc == goalCol)) {
-        //std::cout << "Skipping occupied tile at (" << nr << ", " << nc << ")\n";
         continue;
       }
 
@@ -134,7 +133,7 @@ std::vector<sf::Vector2f> Map::findPath(sf::Vector2f& from, sf::Vector2f& to) {
   if (!goalNode) {
     std::cout << "No path found!\n";
     return path;
-  } 
+  }
 
   // Reconstruct path
   for (node* cur = goalNode; cur != nullptr; cur = cur->parent)

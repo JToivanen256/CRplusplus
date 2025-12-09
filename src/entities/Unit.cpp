@@ -123,15 +123,7 @@ void Unit::drawVision(sf::RenderWindow& window, bool visible) const {
   window.draw(c);
 }
 // Syncs the sprite back to the center position of the unit. Can be useful?
-void Unit::syncVisual() {
-  // position_.x = static_cast<int>(std::round(position_.x));
-  // position_.y = static_cast<int>(std::round(position_.y));
-  sprite_.setPosition(position_);
-}
-
-/*std::string Unit::getName() const {
-    return "...";
-}*/
+void Unit::syncVisual() { sprite_.setPosition(position_); }
 
 void Unit::update(float deltaTime) {
   if (currentCooldown_ > 0.f)
@@ -168,7 +160,7 @@ void Unit::update(float deltaTime) {
       moveToward(targetPosition_, deltaTime);
     }
   } else {  // no target, should not happen during the game due to
-            // auto-targeting on king tower
+            // auto-targeting on closest tower
     isAttacking_ = false;
     if (path_.size() >= 2 && currentPathIndex_ < path_.size()) {
       setTargetPosition(path_[currentPathIndex_]);
@@ -205,11 +197,9 @@ void Unit::setLastTargetPoint(const sf::Vector2f& point) {
 
 bool Unit::targetsOnlyTowers() const { return onlyTargerTowers_; }
 
-std::pair<Entity*, sf::Vector2f> Unit::scanNearestTower(
-    const std::vector<Entity*>& towers) const {
+Entity* Unit::scanNearestTower(const std::vector<Entity*>& towers) const {
   Entity* closest = nullptr;
   float bestDist2 = std::numeric_limits<float>::max();
-  sf::Vector2f bestPoint{0.f, 0.f};
 
   for (Entity* t : towers) {
     if (!t || t->isDead() || t->getOwner() == owner_) continue;
@@ -221,8 +211,7 @@ std::pair<Entity*, sf::Vector2f> Unit::scanNearestTower(
     if (d2 < bestDist2) {
       bestDist2 = d2;
       closest = t;
-      bestPoint = cp;
     }
   }
-  return {closest, bestPoint};
+  return closest;
 }

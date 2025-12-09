@@ -43,12 +43,9 @@ class Player {
   }  // For AI
 
   // Actions
-  // void drawCard();
   bool playCard(const std::shared_ptr<Card>& card);
 
   // Deck and Hand
-  // void shuffleDeck();
-  // void initializeHand();
   void updateHand();
 
   // Getters

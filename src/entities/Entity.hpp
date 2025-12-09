@@ -5,19 +5,8 @@
 
 #include "../players/Player.hpp"
 
-/*struct GridPos {
-  int x;
-  int y;
-};*/
-
-/*struct Pos {
-  int x;
-  int y;
-};*/
-
 class Entity {
  protected:
-  //GridPos gridPosition_;
   sf::Vector2f position_;
   int maxHealth_;  // For health bar calculations
   int health_;
@@ -29,14 +18,13 @@ class Entity {
   sf::Sprite sprite_;
   std::shared_ptr<sf::Texture> texturePtr_;
   Player* owner_;
-  Entity* target_ = nullptr; // Possibly dangerous dangling pointer
+  Entity* target_ = nullptr;  // Possibly dangerous dangling pointer
   bool isAttacking_ = false;
 
  public:
-  Entity(float x, float y, int health, int damage,
-         float attackCooldown, float attackRange, Player* owner)
+  Entity(float x, float y, int health, int damage, float attackCooldown,
+         float attackRange, Player* owner)
       : position_{x, y},
-        //gridPosition_{gridX, gridY},
         health_(health),
         maxHealth_(health),
         damage_(damage),
@@ -48,7 +36,6 @@ class Entity {
 
   int getHealth() const { return health_; }
 
-  //GridPos getGridPosition() { return gridPosition_; }
   sf::Vector2f getPosition() { return position_; }
 
   sf::Sprite& getSprite() { return sprite_; }

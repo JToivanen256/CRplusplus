@@ -65,9 +65,6 @@ Match::Match(Player& player1, Player& player2)
               r, c, reinterpret_cast<intptr_t>(tower.get()) & 0x7fffffff);
         }
       }
-
-      std::cout << "tower tiles: (" << r0 << "," << c0 << ") -> (" << r1 << ","
-                << c1 << ")" << std::endl;
     }
   }
 
@@ -136,15 +133,11 @@ void Match::update(float deltaTime) {
             if (path.size() >= 2) unit->setPath(path);
           }
         }
-      } else {  // No target found, go for enemy king tower
-        // auto enemyKT = (unit->getOwner() == &player1_) ?
-        // getKingTowers().second : getKingTowers().first;
+      } else {  // No other target in sight, go for closest enemy tower
 
-        entities = allTowerEntities();  // all enemy towers
-        auto enemyTower = unit->scanNearestTower(entities).first;
+        auto enemyTower = unit->scanNearestTower(allTowerEntities());
 
         if (enemyTower && unit->getTarget() != enemyTower) {
-          std::cout << "No target found, going for enemy king tower\n";
           unit->setTarget(enemyTower);
           auto TargetPos = enemyTower->getPosition();
 
@@ -287,12 +280,6 @@ void Match::createUnitFromCard(const UnitCard& card, int gridX, int gridY,
 
   unit->syncVisual();
   addUnit(std::move(unit));
-
-  for (const auto& unit : units_) {
-    sf::Vector2f gp = unit->getPosition();
-    std::string cardName = unit->getName();
-    std::cout << cardName << " at (" << gp.x << ", " << gp.y << ")\n";
-  }
 }
 
 std::vector<Entity*> Match::allEntities() {

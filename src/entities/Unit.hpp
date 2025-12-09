@@ -53,8 +53,8 @@ class Unit : public Entity {
   std::pair<Entity*, sf::Vector2f> scanNearestEnemy(
       const std::vector<Entity*>& all) const;
 
-  std::pair<Entity*, sf::Vector2f> scanNearestTower(
-      const std::vector<Entity*>& towers) const;
+  Entity* scanNearestTower(
+      const std::vector<Entity*>& towers) const;  // For default targeting
 
   void drawVision(sf::RenderWindow& window, bool visible = true) const;
 
@@ -75,7 +75,7 @@ class Unit : public Entity {
   sf::Vector2f getLastTargetPoint() const;
   void setLastTargetPoint(const sf::Vector2f& point);
 
-  // void heal(int amount); ?
+  // void heal(int amount); Not in this version
 
   bool targetsOnlyTowers() const;
 };

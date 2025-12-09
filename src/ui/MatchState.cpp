@@ -203,21 +203,6 @@ void MatchState::spawnUnit(int row, int col,
   if (auto ucard = std::dynamic_pointer_cast<UnitCard>(cardPtr)) {
     match_.createUnitFromCard(*ucard, col, row, owner);
   }
-
-  // Register occupancy with a simple id
-  int unitId =
-      static_cast<int>(row * 100 + col);  // Simple unique id based on position
-  // match_.getMap().getGrid().addOccupant(row, col, unitId);
-
-  /*std::cout << "Spawned unit for card '" << cardPtr->getName() << "' at grid
-  ("
-            << row << ", " << col << ")" << std::endl;
-
-  for (const auto& unit : match_.getUnits()) {
-    sf::Vector2f pos = unit->getPosition();
-    std::string cardName = unit->getName();
-    std::cout << cardName << " at grid (" << pos.x << ", " << pos.y << ")\n";
-  }*/
 }
 
 void MatchState::castSpell(int row, int col,
@@ -264,7 +249,6 @@ void MatchState::applySpellDamage(const SpellCard& card,
 
   for (auto& unit : match_.getUnits()) {
     if (unit && !unit->isDead()) {
-      // applySplash(*unit);
       if (unit->getOwner() != &owner) {  // no friendly fire lol
         applySplash(*unit);
       }
@@ -273,7 +257,6 @@ void MatchState::applySpellDamage(const SpellCard& card,
 
   for (const auto& tower : match_.getTowers()) {
     if (tower && !tower->isDead()) {
-      // applySplash(*tower);
       if (tower->getOwner() != &owner) {
         applySplash(*tower);
       }
