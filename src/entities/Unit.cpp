@@ -66,15 +66,18 @@ void Unit::moveToward(const sf::Vector2f& dest, float dt) {
 }
 
 // Find the point on rectangle sprite (r) that is closes to the unit (p)
-static inline sf::Vector2f clampPointToRect(const sf::FloatRect& r, const sf::Vector2f& p) {
+static inline sf::Vector2f clampPointToRect(const sf::FloatRect& r,
+                                            const sf::Vector2f& p) {
   sf::Vector2f out;
   out.x = std::max(r.left, std::min(r.left + r.width, p.x));
-  out.y = std::max(r.top,  std::min(r.top + r.height, p.y));
+  out.y = std::max(r.top, std::min(r.top + r.height, p.y));
   return out;
 }
 
-// Scans the given list of entities and returns the closest enemy and the point of collision with the vision range
-std::pair<Entity*, sf::Vector2f> Unit::scanNearestEnemy(const std::vector<Entity*>& all) const {
+// Scans the given list of entities and returns the closest enemy and the point
+// of collision with the vision range
+std::pair<Entity*, sf::Vector2f> Unit::scanNearestEnemy(
+    const std::vector<Entity*>& all) const {
   const float vision = visionRange_;
   const float r2 = vision * vision;
   const sf::Vector2f me = position_;
@@ -102,7 +105,7 @@ std::pair<Entity*, sf::Vector2f> Unit::scanNearestEnemy(const std::vector<Entity
     }
   }
 
-  return { closest, bestPoint };
+  return {closest, bestPoint};
 }
 
 // this draws a circle showing the vision range of an unit and can be used for
@@ -121,8 +124,8 @@ void Unit::drawVision(sf::RenderWindow& window, bool visible) const {
 }
 // Syncs the sprite back to the center position of the unit. Can be useful?
 void Unit::syncVisual() {
-  //position_.x = static_cast<int>(std::round(position_.x));
-  //position_.y = static_cast<int>(std::round(position_.y));
+  // position_.x = static_cast<int>(std::round(position_.x));
+  // position_.y = static_cast<int>(std::round(position_.y));
   sprite_.setPosition(position_);
 }
 
@@ -131,13 +134,15 @@ void Unit::syncVisual() {
 }*/
 
 void Unit::update(float deltaTime) {
-  if (currentCooldown_ > 0.f) currentCooldown_ = std::max(0.f, currentCooldown_ - deltaTime);
+  if (currentCooldown_ > 0.f)
+    currentCooldown_ = std::max(0.f, currentCooldown_ - deltaTime);
 
   // has target?
   if (target_ && !target_->isDead()) {
     sf::Vector2f myPos = position_;
     sf::FloatRect tb = target_->getSpriteBounds();
-    sf::Vector2f contact = clampPointToRect(tb, myPos); // nearest point on target
+    sf::Vector2f contact =
+        clampPointToRect(tb, myPos);  // nearest point on target
     float d2 = dist2(myPos, contact);
 
     // if enemy in *ATTACK* range -> attack
@@ -152,7 +157,7 @@ void Unit::update(float deltaTime) {
           isAttacking_ = false;
         }
       }
-    } else { // else move toward enemy, by iterating given path
+    } else {  // else move toward enemy, by iterating given path
       isAttacking_ = false;
       if (path_.size() >= 2 && currentPathIndex_ < path_.size()) {
         setTargetPosition(path_[currentPathIndex_]);
@@ -162,7 +167,8 @@ void Unit::update(float deltaTime) {
       }
       moveToward(targetPosition_, deltaTime);
     }
-  } else { // no target, should not happen during the game due to auto-targeting on king tower
+  } else {  // no target, should not happen during the game due to
+            // auto-targeting on king tower
     isAttacking_ = false;
     if (path_.size() >= 2 && currentPathIndex_ < path_.size()) {
       setTargetPosition(path_[currentPathIndex_]);
@@ -171,7 +177,6 @@ void Unit::update(float deltaTime) {
       }
     }
     moveToward(targetPosition_, deltaTime);
-    
   }
   syncVisual();
 }
@@ -182,24 +187,42 @@ void Unit::setPath(const std::vector<sf::Vector2f>& newPath) {
   if (path_.size() >= 2) {
     setTargetPosition(path_[currentPathIndex_]);
   } else {
-    setTargetPosition(position_); // no movement, should not happen
+    setTargetPosition(position_);  // no movement, should not happen
   }
 }
 
-void Unit::setTargetPosition(const sf::Vector2f& pos) {
-  targetPosition_ = pos;
-}
+void Unit::setTargetPosition(const sf::Vector2f& pos) { targetPosition_ = pos; }
 
-void Unit::setTarget(Entity* target) {
-  target_ = target;
-}
+void Unit::setTarget(Entity* target) { target_ = target; }
 
-Entity* Unit::getTarget() const {
-  return target_;
-}
+Entity* Unit::getTarget() const { return target_; }
 
 sf::Vector2f Unit::getLastTargetPoint() const { return lastTargetPoint_; }
 
-void Unit::setLastTargetPoint(const sf::Vector2f& point) { lastTargetPoint_ = point; }
+void Unit::setLastTargetPoint(const sf::Vector2f& point) {
+  lastTargetPoint_ = point;
+}
 
 bool Unit::targetsOnlyTowers() const { return onlyTargerTowers_; }
+
+std::pair<Entity*, sf::Vector2f> Unit::scanNearestTower(
+    const std::vector<Entity*>& towers) const {
+  Entity* closest = nullptr;
+  float bestDist2 = std::numeric_limits<float>::max();
+  sf::Vector2f bestPoint{0.f, 0.f};
+
+  for (Entity* t : towers) {
+    if (!t || t->isDead() || t->getOwner() == owner_) continue;
+
+    sf::FloatRect b = t->getSpriteBounds();
+    sf::Vector2f cp = clampPointToRect(b, position_);
+    float d2 = dist2(position_, cp);
+
+    if (d2 < bestDist2) {
+      bestDist2 = d2;
+      closest = t;
+      bestPoint = cp;
+    }
+  }
+  return {closest, bestPoint};
+}

@@ -137,17 +137,22 @@ void Match::update(float deltaTime) {
           }
         }
       } else {  // No target found, go for enemy king tower
-        auto enemyKT = (unit->getOwner() == &player1_) ? getKingTowers().second
-                                                       : getKingTowers().first;
-        if (enemyKT && unit->getTarget() != enemyKT) {
+        // auto enemyKT = (unit->getOwner() == &player1_) ?
+        // getKingTowers().second : getKingTowers().first;
+
+        entities = allTowerEntities();  // all enemy towers
+        auto enemyTower = unit->scanNearestTower(entities).first;
+
+        if (enemyTower && unit->getTarget() != enemyTower) {
           std::cout << "No target found, going for enemy king tower\n";
-          unit->setTarget(enemyKT);
-          auto TargetPos = enemyKT->getPosition();
+          unit->setTarget(enemyTower);
+          auto TargetPos = enemyTower->getPosition();
+
           // Position just outside tower sprite to avoid occupied tiles
           if (unit->getOwner() == &player1_) {
-            TargetPos.y += enemyKT->getSpriteBounds().height / 2 + 1;
+            TargetPos.y += enemyTower->getSpriteBounds().height / 2 + 1;
           } else {
-            TargetPos.y -= enemyKT->getSpriteBounds().height / 2 + 1;
+            TargetPos.y -= enemyTower->getSpriteBounds().height / 2 + 1;
           }
           auto unitPos = unit->getPosition();
           auto path = map_.findPath(unitPos, TargetPos);

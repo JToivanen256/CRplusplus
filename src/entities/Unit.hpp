@@ -20,16 +20,18 @@ enum class Direction {
   DownLeft,
   DownRight
 };
-enum class State { Moving, Attacking }; // not used (yet?)
+enum class State { Moving, Attacking };  // not used (yet?)
 class Unit : public Entity {
  protected:
-  sf::Vector2f targetPosition_; // Next position to move toward, NOT the final element of path_!
+  sf::Vector2f targetPosition_;  // Next position to move toward, NOT the final
+                                 // element of path_!
   float movementSpeed_;
   float visionRange_;
-  std::string name_;  // Debug
-  std::vector<sf::Vector2f> path_; // Path of world coordinates to follow
-  size_t currentPathIndex_ = 0; // Current index in path_
-  sf::Vector2f lastTargetPoint_{0.f,0.f}; // Last point where target was seen on scan
+  std::string name_;                // Debug
+  std::vector<sf::Vector2f> path_;  // Path of world coordinates to follow
+  size_t currentPathIndex_ = 0;     // Current index in path_
+  sf::Vector2f lastTargetPoint_{
+      0.f, 0.f};  // Last point where target was seen on scan
   bool onlyTargerTowers_;
 
   using CanMoveFn = std::function<bool(const sf::Vector2f& nextWorldPos)>;
@@ -37,18 +39,22 @@ class Unit : public Entity {
   CanMoveFn CanMoveTo_{};
 
  public:
-  Unit(float x, float y, int health, int damage,
-       float attackCooldown, float attackRange, float movementSpeed,
-       float visionRange, Player* owner, const std::string& name, bool onlyTargetTowers)
-      : Entity(x, y, health, damage, attackCooldown, attackRange,
-               owner),
+  Unit(float x, float y, int health, int damage, float attackCooldown,
+       float attackRange, float movementSpeed, float visionRange, Player* owner,
+       const std::string& name, bool onlyTargetTowers)
+      : Entity(x, y, health, damage, attackCooldown, attackRange, owner),
         movementSpeed_(movementSpeed),
         visionRange_(visionRange),
-        name_(name), onlyTargerTowers_(onlyTargetTowers) {}
+        name_(name),
+        onlyTargerTowers_(onlyTargetTowers) {}
   void move(Direction dir, float dt);
   void moveToward(const sf::Vector2f& dest, float dt);
 
-  std::pair<Entity*, sf::Vector2f> scanNearestEnemy(const std::vector<Entity*>& all) const;
+  std::pair<Entity*, sf::Vector2f> scanNearestEnemy(
+      const std::vector<Entity*>& all) const;
+
+  std::pair<Entity*, sf::Vector2f> scanNearestTower(
+      const std::vector<Entity*>& towers) const;
 
   void drawVision(sf::RenderWindow& window, bool visible = true) const;
 
