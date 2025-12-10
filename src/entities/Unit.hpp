@@ -75,6 +75,8 @@ class Unit : public Entity {
   sf::Vector2f getLastTargetPoint() const;
   void setLastTargetPoint(const sf::Vector2f& point);
 
+  float getMovementSpeed() const { return movementSpeed_; }
+
   // void heal(int amount); Not in this version
 
   bool targetsOnlyTowers() const;

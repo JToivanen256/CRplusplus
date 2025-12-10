@@ -37,7 +37,6 @@ std::vector<sf::Vector2f> Map::findPath(sf::Vector2f& from, sf::Vector2f& to) {
     return {};
   }
   if (startRow == goalRow && startCol == goalCol) {
-    std::cout << "Start is the same as goal!\n";
     return {grid_.gridToWorld(startRow, startCol)};
   }
 
@@ -131,7 +130,7 @@ std::vector<sf::Vector2f> Map::findPath(sf::Vector2f& from, sf::Vector2f& to) {
 
   std::vector<sf::Vector2f> path;
   if (!goalNode) {
-    std::cout << "No path found!\n";
+    // std::cout << "No path found!\n";
     return path;
   }
 

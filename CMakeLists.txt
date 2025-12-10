@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.10)
 project(strategy-game-1)
 
-# ✅ Pakota C++17 käyttöön
+# Force C++17 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
