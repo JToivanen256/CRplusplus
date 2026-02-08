@@ -9,4 +9,5 @@ Clash Royale type 1v1 2D strategy game.
 - Juuso Toivanen
 - Lasse Keijonen
 
+![Gameplaypicture](assets/Gamepicture.png)
 
